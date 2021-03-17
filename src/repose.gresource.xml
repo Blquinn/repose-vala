@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/me/blq/Repose">
+    <file>ui/ActiveRequestTab.ui</file>
+    <file>ui/MainWindow.ui</file>
+    <file>ui/RequestContainer.ui</file>
+    <file>ui/RequestList.ui</file>
+    <file>ui/Collection.ui</file>
+    <file>ui/ParamTable.ui</file>
+    <file>ui/RequestEditor.ui</file>
+    <file>ui/ResponseContainer.ui</file>
+
+    <file>ui/style.css</file>
+
+    <file>resources/img/nightcap-round-grey-100x100.png</file>
+  </gresource>
+</gresources>

@@ -1,0 +1,7 @@
+data/me.blq.Repose.desktop.in
+data/me.blq.Repose.appdata.xml.in
+data/me.blq.Repose.gschema.xml
+src/window.ui
+src/main.vala
+src/window.vala
+

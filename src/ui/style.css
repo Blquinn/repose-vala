@@ -1,0 +1,2 @@
+treeview.view.expander { -gtk-icon-source: -gtk-icontheme("folder"); }
+treeview.view.expander:checked { -gtk-icon-source: -gtk-icontheme("folder-open"); }
