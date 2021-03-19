@@ -36,7 +36,6 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="has-entry">True</property>
-            <property name="active-id">GET</property>
             <items>
               <item id="GET" translatable="yes">GET</item>
               <item id="POST" translatable="yes">POST</item>

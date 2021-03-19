@@ -17,15 +17,95 @@
  */
 
 namespace Repose.Models {
-    public class Request : GLib.Object {
+    public class RawBody : Object {
+        public enum RawBodyType {
+            PLAIN_TEXT,
+            JSON,
+            JAVASCRIPT,
+            XML,
+            XML_TEXT,
+            HTML,
+        }
+
+        public RawBodyType active_type { get; set; default = RawBodyType.PLAIN_TEXT; }
+        public string body { get; set; default = ""; }
+
+        public static string body_type_to_mime(RawBodyType typ) {
+            switch (typ) {
+            case PLAIN_TEXT:
+                return "text/plain";
+            case JSON:
+                return "application/json";
+            case JAVASCRIPT:
+                return "application/javascript";
+            case XML:
+                return "application/xml";
+            case XML_TEXT:
+                return "text/xml";
+            case HTML:
+                return "text/html";
+            default:
+                return "";
+            }
+        }
+        
+        public static string body_type_to_sv_lang(RawBodyType typ) {
+            switch (typ) {
+            case PLAIN_TEXT:
+                return "text-plain";
+            case JSON:
+                return "json";
+            case JAVASCRIPT:
+                return "js";
+            case XML:
+                return "xml-application";
+            case XML_TEXT:
+                return "xml-text";
+            case HTML:
+                return "html";
+            default:
+                return "";
+            }
+        }
+    }
+
+    public class RequestBodies : Object {
+        public RawBody raw { get; set; default = new RawBody(); }
+
+        // ListStore of ParamRow
+        public ListStore form { get; default = new ListStore(typeof(ParamRow)); }
+
+        // ListStore of ParamRow
+        public ListStore form_url { get; default = new ListStore(typeof(ParamRow)); }
+
+        // Binary stores the file path for the binary file.
+        public string binary { get; set; default = ""; }
+    }
+    
+    public class Request : Object {
+        public enum BodyType {
+            NONE,
+            RAW,
+            FORM,
+            FORM_URL,
+            BINARY,
+        }
+
         public string name { get; set; }
         public string url { get; set; }
         public string method { get; set; }
+        public BodyType active_body_type { get; set; default = BodyType.NONE; }
+        public RequestBodies request_bodies { get; set; default = new RequestBodies(); }
+        public Response response { get; set; default = new Response(); }
 
         public Request(string name, string url, string method) {
             this.name = name;
             this.url = url;
             this.method = method;
+        }
+
+        public static Request empty() {
+            return new Request("New Request", "", "GET");
         }
     }
 }

@@ -1,4 +1,4 @@
-/* main.vala
+/* response.vala
  *
  * Copyright 2021 Benjamin Quinn
  *
@@ -16,18 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-int main (string[] args) {
-	var app = new Gtk.Application("me.blq.Repose", ApplicationFlags.FLAGS_NONE);
+namespace Repose.Models {
+    public class Response : Object {
+        public signal void response_received();
 
-	typeof(Gtk.SourceView).ensure();
-
-	app.activate.connect(() => {
-		var win = app.active_window;
-		if (win == null) {
-			win = new Repose.Widgets.MainWindow(app);
-		}
-		win.present();
-	});
-
-	return app.run(args);
+        public uint status_code { get; set; default = -1; }
+        public TimeSpan response_time { get; set; default = -1; }
+        public string content_type { get; set; }
+        public Array<ParamRow> headers { get; set; default = new Array<ParamRow>(); }
+        // TODO: Properly handle response types.
+        public string body { get; set; }
+    }
 }

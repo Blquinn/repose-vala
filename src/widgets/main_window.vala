@@ -17,34 +17,65 @@
  */
 
 namespace Repose.Widgets {
+
+	using Repose;
+
 	[GtkTemplate(ui = "/me/blq/Repose/ui/MainWindow.ui")]
     public class MainWindow : Gtk.Window {
-		//  [GtkChild] Gtk.Paned request_pane;
-		//  [GtkChild] Gtk.ListBox request_list;
-		//  [GtkChild] Gtk.Box active_requests_notebook_box;
-		[GtkChild] Gtk.Notebook active_requests_notebook;
-		//  [GtkChild] Gtk.HeaderBar header_bar;
-		//  [GtkChild] Gtk.Button new_request_button;
+		//  [GtkChild] private Gtk.Paned request_pane;
+		//  [GtkChild] private Gtk.ListBox request_list;
+		//  [GtkChild] private Gtk.Box active_requests_notebook_box;
+		[GtkChild] private Gtk.Notebook active_requests_notebook;
+		//  [GtkChild] private Gtk.HeaderBar header_bar;
+		//  [GtkChild] private Gtk.Button new_request_button;
 
-		Repose.Models.RootState root_state;
+		private Models.RootState root_state;
 
 		public MainWindow (Gtk.Application app) {
 			GLib.Object (application: app);
 
-			root_state = new Repose.Models.RootState();
+			try {
+				var icon = new Gdk.Pixbuf.from_resource("/me/blq/Repose/resources/img/nightcap-round-grey-100x100.png");
+				set_icon(icon);
+			} catch (Error e) {
+				warning("Failed to load application icon: %s", e.message);
+			}
 
-			root_state.notify.connect((s, p) => {
-				if (p.name != "active_request") return;
+			root_state = new Models.RootState();
 
-				//  root_state.active_requests
-			});
+			// Keep notebook tabs in sync with active_request_items.
+			root_state.active_requests.items_changed.connect(on_active_requests_items_changed);
+			root_state.active_request_changed.connect(on_active_request_changed);
 
-			active_requests_notebook.append_page(new RequestEditor(), new Gtk.Label("New Request"));
+			root_state.add_new_request();
 		}
 
 		[GtkCallback]
-		void on_new_request_button_clicked(Gtk.Button btn) {
-			active_requests_notebook.append_page(new RequestEditor(), new Gtk.Label("New Request"));
+		private void on_new_request_button_clicked(Gtk.Button btn) {
+			root_state.add_new_request();
+		}
+
+		private void on_active_request_changed() {
+			message("Active request changed to: %s", root_state.active_request.name);
+
+			uint pos;
+			root_state.active_requests.find(root_state.active_request, out pos);
+
+			active_requests_notebook.set_current_page((int) pos);
+		}
+
+		private void on_active_requests_items_changed(uint pos, uint removed, uint added) {
+			// Assume only 1 item changing at a time.
+			message("Active requests changed pos: %u, removed: %u, added: %u", pos, removed, added);
+
+			for (int i = 0; i < added; i++) {
+				var req = (Models.Request) root_state.active_requests.get_item(pos+i);
+				active_requests_notebook.append_page(new RequestEditor(root_state, req), new Gtk.Label(req.name));
+			}
+
+			if (removed > 0) {
+				warning("We don't handle remove yet.");
+			}
 		}
     }
 }

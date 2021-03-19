@@ -17,18 +17,55 @@
  */
 
 namespace Repose.Widgets {
+    using Repose;
+
 	[GtkTemplate(ui = "/me/blq/Repose/ui/RequestEditor.ui")]
     public class RequestEditor : Gtk.Box {
-        public RequestEditor() {
+
+        private Models.RootState root_state;
+        private Models.Request request;
+
+        [GtkChild] private Gtk.Stack request_response_stack;
+        [GtkChild] private Gtk.Entry request_name_entry;
+        //  [GtkChild] private Gtk.ComboBox request_method_combo;
+        [GtkChild] private Gtk.ComboBoxText request_method_combo;
+        [GtkChild] private Gtk.Entry url_entry;
+        //  [GtkChild] private Gtk.Button send_button;
+        //  [GtkChild] private Gtk.Button save_button;
+
+        private RequestContainer request_container;
+        private ResponseContainer response_container;
+
+        public RequestEditor(Models.RootState root_state, Models.Request request) {
+            this.root_state = root_state;
+            this.request = request;
+
+            request_container = new RequestContainer();
+            response_container = new ResponseContainer(request.response);
+
+            request_response_stack.add_titled(request_container, "request", "Request");
+            request_response_stack.add_titled(response_container, "response", "Response");
+
+            // Bindings
+
+            request.bind_property("name", request_name_entry, "text", BindingFlags.BIDIRECTIONAL);
+            request.bind_property("url", url_entry, "text", BindingFlags.BIDIRECTIONAL);
+            request.bind_property("method", request_method_combo, "active-id", BindingFlags.DEFAULT);
+            request_method_combo.changed.connect(() => {
+                request.method = request_method_combo.get_active_text();
+            });
         }
 
         [GtkCallback]
-        void on_save_pressed(Gtk.Button btn) {}
+        private void on_save_pressed(Gtk.Button btn) {}
 
         [GtkCallback]
-        void on_send_pressed(Gtk.Button btn) {}
+        private void on_send_pressed(Gtk.Button btn) {
+            message("Executing request: %s", request.name);
+            root_state.execute_active_request();
+        }
         
         [GtkCallback]
-        void on_request_name_changed() {}
+        private void on_request_name_changed() {}
     }
 }
