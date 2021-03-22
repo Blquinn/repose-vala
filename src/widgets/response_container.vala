@@ -17,6 +17,7 @@
  */
 
 using Repose;
+using Repose.Utils;
 
 namespace Repose.Widgets {
 
@@ -35,7 +36,7 @@ namespace Repose.Widgets {
         [GtkChild] private Gtk.TextView response_text_raw;
         //  [GtkChild] private Gtk.ScrolledWindow response_webview_scroll_window;
         //  [GtkChild] private Gtk.MenuButton response_menu_button;
-        //  [GtkChild] private Gtk.Spinner response_loading_spinner;
+        [GtkChild] private Gtk.Spinner response_loading_spinner;
 
         private Gtk.SourceStyleSchemeManager style_manager;
         private Gtk.SourceLanguageManager language_manager;
@@ -54,14 +55,17 @@ namespace Repose.Widgets {
             var lang = language_manager.get_language("text-plain");
             response_text_buffer.set_language(lang);
 
+            // Bindings
+
             response.response_received.connect(on_response_received);
+            response.request.bind_property("request_running", response_loading_spinner, "active", BindingFlags.DEFAULT);
+            response.request.bind_property("request_running", response_loading_spinner, "visible", BindingFlags.DEFAULT);
         }
 
         private void on_response_received() {
-            //  response.bind_property("body", response_text.buffer, "text", BindingFlags.DEFAULT);
             response_status_label.set_text("Status: %u".printf(response.status_code));
-            response_size_label.set_text("Size: %d".printf(response.body.length));
-            response_time_label.set_text("Time: %s".printf(format_response_time(response.response_time)));
+            response_size_label.set_text("Size: %s".printf(Humanize.bytes(response.body_length)));
+            response_time_label.set_text("Time: %s".printf(Humanize.timespan(response.response_time)));
             response_text_raw.buffer.text = response.body;
             set_headers_text();
 
@@ -110,20 +114,6 @@ namespace Repose.Widgets {
 
                 buf.insert_markup(ref iter, "<b>%s:</b> %s\n".printf(h.key, h.value), -1);
             }
-        }
-
-        private string format_response_time(TimeSpan s) {
-            if (s > TimeSpan.SECOND) {
-                double d = s;
-                d /= TimeSpan.SECOND;
-                return "%.2fs".printf(d);
-            } 
-
-            if (s > TimeSpan.MILLISECOND) {
-                return "%dms".printf((int)(s / TimeSpan.MILLISECOND));
-            }
-
-            return "%dus".printf((int)s);
         }
 
         [GtkCallback]

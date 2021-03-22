@@ -3,37 +3,11 @@
 <interface>
   <requires lib="gtk+" version="3.22"/>
   <requires lib="gtksourceview" version="4.0"/>
-  <object class="GtkPopoverMenu" id="response_menu_popover">
-    <property name="can-focus">False</property>
-    <child>
-      <object class="GtkListBox">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <child>
-          <object class="GtkListBoxRow">
-            <property name="width-request">100</property>
-            <property name="height-request">80</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <child>
-              <object class="GtkAccelLabel" id="response_menu_toggle_filter">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Filter Response</property>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="submenu">submenu0</property>
-        <property name="position">1</property>
-      </packing>
-    </child>
-  </object>
   <template class="ReposeWidgetsResponseContainer" parent="GtkOverlay">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
@@ -169,6 +143,7 @@
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="editable">False</property>
+                            <property name="wrap-mode">word-char</property>
                             <property name="left-margin">2</property>
                             <property name="right-margin">2</property>
                             <property name="cursor-visible">False</property>
@@ -292,7 +267,6 @@
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
-                <property name="popover">response_menu_popover</property>
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
@@ -328,4 +302,31 @@
       </object>
     </child>
   </template>
+  <object class="GtkPopover" id="response_menu_popover">
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-top">10</property>
+        <property name="margin-bottom">10</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="text" translatable="yes">Show Response Filter</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
 </interface>

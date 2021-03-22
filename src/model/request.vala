@@ -96,12 +96,14 @@ namespace Repose.Models {
         public string method { get; set; }
         public BodyType active_body_type { get; set; default = BodyType.NONE; }
         public RequestBodies request_bodies { get; set; default = new RequestBodies(); }
-        public Response response { get; set; default = new Response(); }
+        public Response response { get; set; }
+        public bool request_running { get; set; default = false; }
 
         public Request(string name, string url, string method) {
             this.name = name;
             this.url = url;
             this.method = method;
+            this.response = new Response(this);
         }
 
         public static Request empty() {

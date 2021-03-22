@@ -21,7 +21,11 @@ int main (string[] args) {
 
 	typeof(Gtk.SourceView).ensure();
 
+
 	app.activate.connect(() => {
+
+		load_css();
+
 		var win = app.active_window;
 		if (win == null) {
 			win = new Repose.Widgets.MainWindow(app);
@@ -30,4 +34,16 @@ int main (string[] args) {
 	});
 
 	return app.run(args);
+}
+
+void load_css() {
+	var css_provider = new Gtk.CssProvider();
+	css_provider.load_from_resource("/me/blq/Repose/ui/style.css");
+
+	var screen = Gdk.Screen.get_default();
+
+	Gtk.StyleContext.add_provider_for_screen(
+		screen,
+		css_provider,
+		Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 }

@@ -45,9 +45,9 @@ namespace Repose.Models {
             active_request = req;
         }
 
-        public void execute_active_request() {
+        public async void execute_active_request() {
             var req = active_request;
-            http_client.do_request(req, req.response);
+            yield http_client.do_request(req, req.response);
         }
     }
 }

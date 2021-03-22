@@ -60,9 +60,10 @@ namespace Repose.Widgets {
         private void on_save_pressed(Gtk.Button btn) {}
 
         [GtkCallback]
-        private void on_send_pressed(Gtk.Button btn) {
+        private async void on_send_pressed(Gtk.Button btn) {
             message("Executing request: %s", request.name);
-            root_state.execute_active_request();
+            request_response_stack.set_visible_child(response_container);
+            yield root_state.execute_active_request();
         }
         
         [GtkCallback]

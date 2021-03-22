@@ -26,5 +26,11 @@ namespace Repose.Models {
         public Array<ParamRow> headers { get; set; default = new Array<ParamRow>(); }
         // TODO: Properly handle response types.
         public string body { get; set; }
+        public size_t body_length { get; set; }
+        public weak Request request { get; set; }
+
+        public Response(Request req) {
+            this.request = req;
+        }
     }
 }
