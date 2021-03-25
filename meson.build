@@ -7,6 +7,8 @@ project('repose', ['c', 'vala'],
 
 i18n = import('i18n')
 
+inc_root = include_directories('.')
+inc_root_dep = declare_dependency(include_directories: inc_root)
 
 subdir('data')
 subdir('src')

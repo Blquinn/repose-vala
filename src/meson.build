@@ -37,9 +37,11 @@ repose_sources += gnome.compile_resources('repose-resources',
   c_name: 'repose'
 )
 
-executable('repose', 
+repose_exe = executable('repose', 
   repose_sources,
   vala_args: '--target-glib=2.50',
   dependencies: repose_deps,
   install: true,
 )
+
+subdir('tests')

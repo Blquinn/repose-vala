@@ -25,7 +25,8 @@ namespace Repose.Models {
         public string content_type { get; set; }
         public Array<ParamRow> headers { get; set; default = new Array<ParamRow>(); }
         // TODO: Properly handle response types.
-        public string body { get; set; }
+        //  public string body { get; set; }
+        public Gtk.TextBuffer body { get; set; }
         public size_t body_length { get; set; }
         public weak Request request { get; set; }
 

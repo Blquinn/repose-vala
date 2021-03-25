@@ -98,6 +98,7 @@ namespace Repose.Models {
         public RequestBodies request_bodies { get; set; default = new RequestBodies(); }
         public Response response { get; set; }
         public bool request_running { get; set; default = false; }
+        public Cancellable? cancellable { get; set; }
 
         public Request(string name, string url, string method) {
             this.name = name;
@@ -108,6 +109,13 @@ namespace Repose.Models {
 
         public static Request empty() {
             return new Request("New Request", "", "GET");
+        }
+
+        public void cancel() {
+            if (cancellable != null) {
+                cancellable.cancel();
+                cancellable = null;
+            }
         }
     }
 }

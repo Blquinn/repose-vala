@@ -37,6 +37,7 @@ namespace Repose.Widgets {
         //  [GtkChild] private Gtk.ScrolledWindow response_webview_scroll_window;
         //  [GtkChild] private Gtk.MenuButton response_menu_button;
         [GtkChild] private Gtk.Spinner response_loading_spinner;
+        [GtkChild] private Gtk.Box request_loading_overlay;
 
         private Gtk.SourceStyleSchemeManager style_manager;
         private Gtk.SourceLanguageManager language_manager;
@@ -49,6 +50,7 @@ namespace Repose.Widgets {
 
             style_manager = new Gtk.SourceStyleSchemeManager();
             response_text_buffer = (Gtk.SourceBuffer)response_text.buffer;
+            response.body = response_text_buffer;
             response_text_buffer.set_style_scheme(style_manager.get_scheme("kate"));
 
             language_manager = new Gtk.SourceLanguageManager();
@@ -59,14 +61,17 @@ namespace Repose.Widgets {
 
             response.response_received.connect(on_response_received);
             response.request.bind_property("request_running", response_loading_spinner, "active", BindingFlags.DEFAULT);
-            response.request.bind_property("request_running", response_loading_spinner, "visible", BindingFlags.DEFAULT);
+            //  request_loading_overlay
+            //  response.request.bind_property("request_running", response_loading_spinner, "visible", BindingFlags.DEFAULT);
+            response.request.bind_property("request_running", request_loading_overlay, "visible", BindingFlags.DEFAULT);
         }
 
         private void on_response_received() {
             response_status_label.set_text("Status: %u".printf(response.status_code));
             response_size_label.set_text("Size: %s".printf(Humanize.bytes(response.body_length)));
             response_time_label.set_text("Time: %s".printf(Humanize.timespan(response.response_time)));
-            response_text_raw.buffer.text = response.body;
+            // TODO: Don't copy.
+            response_text_raw.buffer.text = response.body.text;
             set_headers_text();
 
             // Prettify response
@@ -99,7 +104,7 @@ namespace Repose.Widgets {
             var lang = language_manager.get_language(lang_id);
             response_text_buffer.set_language(lang);
 
-            response_text_buffer.set_text(response.body);
+            //  response_text_buffer.set_text(response.body);
         }
 
         private void set_headers_text() {
@@ -121,6 +126,11 @@ namespace Repose.Widgets {
 
         [GtkCallback]
         private void populate_response_text_context_menu(Gtk.Menu popup) {}
+
+        [GtkCallback]
+        private void on_cancel_request_button_clicked(Gtk.Button btn) {
+            response.request.cancel();
+        }
     }
 
 }

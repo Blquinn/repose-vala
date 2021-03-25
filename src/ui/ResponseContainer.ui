@@ -320,13 +320,41 @@
       </packing>
     </child>
     <child type="overlay">
-      <object class="GtkSpinner" id="response_loading_spinner">
-        <property name="width-request">50</property>
-        <property name="height-request">50</property>
+      <object class="GtkBox" id="request_loading_overlay">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="halign">center</property>
         <property name="valign">center</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkSpinner" id="response_loading_spinner">
+            <property name="width-request">50</property>
+            <property name="height-request">50</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="cancel_request_button">
+            <property name="label" translatable="yes">Cancel</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <signal name="clicked" handler="on_cancel_request_button_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
       </object>
     </child>
   </template>
