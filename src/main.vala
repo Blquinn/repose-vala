@@ -40,10 +40,10 @@ void load_css() {
 	var css_provider = new Gtk.CssProvider();
 	css_provider.load_from_resource("/me/blq/Repose/ui/style.css");
 
-	var screen = Gdk.Screen.get_default();
+	var display = Gdk.Display.get_default();
 
-	Gtk.StyleContext.add_provider_for_screen(
-		screen,
+	Gtk.StyleContext.add_provider_for_display(
+		display,
 		css_provider,
 		Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 }

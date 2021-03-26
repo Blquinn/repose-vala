@@ -9,6 +9,9 @@
             "type": "gdb",
             "request": "launch",
             "target": "./build/src/repose",
+            "env": {
+                "G_DEBUG": "fatal-criticals,fatal-warnings",
+            },
             "cwd": "${workspaceRoot}",
             "valuesFormatting": "parseText",
             "preLaunchTask": "Meson: Build src/repose"

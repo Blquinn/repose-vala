@@ -1,31 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
 <interface>
-  <requires lib="gtk+" version="3.22"/>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="gtk" version="4.0"/>
   <template class="ReposeWidgetsRequestEditor" parent="GtkBox">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkEntry" id="request_name_entry">
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
         <property name="margin-start">3</property>
         <property name="margin-end">3</property>
         <property name="margin-top">3</property>
         <property name="placeholder-text" translatable="yes">Request Name</property>
         <signal name="changed" handler="on_request_name_changed" swapped="no"/>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
     </child>
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <property name="margin-start">3</property>
         <property name="margin-end">3</property>
         <property name="margin-top">3</property>
@@ -33,9 +22,8 @@
         <property name="spacing">3</property>
         <child>
           <object class="GtkComboBoxText" id="request_method_combo">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="has-entry">True</property>
+            <property name="has-entry">1</property>
+            <property name="hexpand">0</property>
             <property name="active-id">GET</property>
             <items>
               <item id="GET" translatable="yes">GET</item>
@@ -47,133 +35,51 @@
               <item id="OPTIONS" translatable="yes">OPTIONS</item>
               <item id="TRACE" translatable="yes">TRACE</item>
             </items>
-            <child internal-child="entry">
+            <!-- <property name="child">
               <object class="GtkEntry">
-                <property name="can-focus">True</property>
               </object>
-            </child>
+            </property> -->
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkEntry" id="url_entry">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
+            <property name="hexpand">1</property>
             <property name="placeholder-text" translatable="yes">Url</property>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkButton" id="send_button">
             <property name="label" translatable="yes">Send</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
+            <property name="receives-default">1</property>
             <signal name="clicked" handler="on_send_pressed" swapped="no"/>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
         </child>
         <child>
           <object class="GtkButton" id="save_button">
             <property name="label" translatable="yes">Save</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
+            <property name="receives-default">1</property>
             <signal name="clicked" handler="on_save_pressed" swapped="no"/>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">3</property>
-          </packing>
         </child>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
     </child>
     <child>
       <object class="GtkStackSwitcher" id="request_response_stack_switcher">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
         <property name="halign">center</property>
+        <property name="margin-top">3</property>
+        <property name="margin-bottom">3</property>
         <property name="stack">request_response_stack</property>
       </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="padding">4</property>
-        <property name="position">2</property>
-      </packing>
     </child>
     <child>
       <object class="GtkStack" id="request_response_stack">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
+        <property name="vexpand">1</property>
         <property name="transition-type">slide-left-right</property>
+        <property name="vexpand">True</property>
         <child>
           <placeholder/>
         </child>
       </object>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">3</property>
-      </packing>
     </child>
   </template>
-  <object class="GtkListStore" id="request_body_type_store">
-    <columns>
-      <!-- column-name type -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">application/json</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkListStore" id="request_method_combo_store">
-    <columns>
-      <!-- column-name Method -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">GET</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">POST</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">PUT</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">PATCH</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">DELETE</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">HEAD</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">OPTIONS</col>
-      </row>
-    </data>
-  </object>
 </interface>

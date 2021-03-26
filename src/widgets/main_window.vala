@@ -34,12 +34,12 @@ namespace Repose.Widgets {
 		public MainWindow (Gtk.Application app) {
 			GLib.Object (application: app);
 
-			try {
-				var icon = new Gdk.Pixbuf.from_resource("/me/blq/Repose/resources/img/nightcap-round-grey-100x100.png");
-				set_icon(icon);
-			} catch (Error e) {
-				warning("Failed to load application icon: %s", e.message);
-			}
+			//  try {
+			//  	var icon = new Gdk.Pixbuf.from_resource("/me/blq/Repose/resources/img/nightcap-round-grey-100x100.png");
+			//  	set_icon(icon);
+			//  } catch (Error e) {
+			//  	warning("Failed to load application icon: %s", e.message);
+			//  }
 
 			root_state = new Models.RootState();
 
@@ -70,7 +70,7 @@ namespace Repose.Widgets {
 
 			for (int i = 0; i < added; i++) {
 				var req = (Models.Request) root_state.active_requests.get_item(pos+i);
-				active_requests_notebook.append_page(new RequestEditor(root_state, req), new Gtk.Label(req.name));
+				active_requests_notebook.append_page(new RequestEditor(root_state, req), new Widgets.ActiveRequestTab(req));
 			}
 
 			if (removed > 0) {

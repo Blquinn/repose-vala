@@ -18,7 +18,8 @@
 
 namespace Repose.Widgets {
 	[GtkTemplate(ui = "/me/blq/Repose/ui/RequestContainer.ui")]
-    public class RequestContainer : Gtk.Notebook {
+    public class RequestContainer : Gtk.Box {
+        [GtkChild] private Gtk.Notebook request_attributes_notebook;
         [GtkChild] private Gtk.Notebook request_type_notebook;
         //  [GtkChild] private Gtk.ListStore request_type_popover_store;
         //  [GtkChild] private Gtk.Popover request_type_popover;
@@ -34,9 +35,9 @@ namespace Repose.Widgets {
         public RequestContainer() {
             param_table = new ParamTable();
             header_table = new ParamTable();
-            prepend_page(header_table, new Gtk.Label("Headers"));
-            prepend_page(param_table, new Gtk.Label("Params"));
-            set_current_page(0);
+            request_attributes_notebook.prepend_page(header_table, new Gtk.Label("Headers"));
+            request_attributes_notebook.prepend_page(param_table, new Gtk.Label("Params"));
+            //  request_attributes_notebook.set_current_page(0);
 
             request_form_data = new ParamTable();
             request_form_urlencoded = new ParamTable();

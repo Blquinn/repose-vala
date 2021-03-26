@@ -22,7 +22,7 @@ using Repose.Utils;
 namespace Repose.Widgets {
 
 	[GtkTemplate(ui = "/me/blq/Repose/ui/ResponseContainer.ui")]
-    public class ResponseContainer : Gtk.Overlay {
+    public class ResponseContainer : Gtk.Box {
         //  [GtkChild] private Gtk.PopoverMenu response_menu_popover;
         //  [GtkChild] private Gtk.AccelLabel response_menu_toggle_filter;
         [GtkChild] private Gtk.Label response_status_label;
@@ -46,6 +46,7 @@ namespace Repose.Widgets {
         private Models.Response response;
 
         public ResponseContainer(Models.Response response) {
+            set_orientation(Gtk.Orientation.VERTICAL);
             this.response = response;
 
             style_manager = new Gtk.SourceStyleSchemeManager();
@@ -60,9 +61,9 @@ namespace Repose.Widgets {
             // Bindings
 
             response.response_received.connect(on_response_received);
-            response.request.bind_property("request_running", response_loading_spinner, "active", BindingFlags.DEFAULT);
+            //  response.request.bind_property("request_running", response_loading_spinner, "active", BindingFlags.DEFAULT);
             //  request_loading_overlay
-            //  response.request.bind_property("request_running", response_loading_spinner, "visible", BindingFlags.DEFAULT);
+            response.request.bind_property("request_running", response_loading_spinner, "visible", BindingFlags.DEFAULT);
             response.request.bind_property("request_running", request_loading_overlay, "visible", BindingFlags.DEFAULT);
         }
 
@@ -124,8 +125,8 @@ namespace Repose.Widgets {
         [GtkCallback]
         private void on_response_filter_changed() {}
 
-        [GtkCallback]
-        private void populate_response_text_context_menu(Gtk.Menu popup) {}
+        //  [GtkCallback]
+        //  private void populate_response_text_context_menu() {}
 
         [GtkCallback]
         private void on_cancel_request_button_clicked(Gtk.Button btn) {
