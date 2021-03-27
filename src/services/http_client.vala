@@ -62,7 +62,8 @@ namespace Repose.Services {
                 }
                     
                 res.status_code = msg.status_code;
-                var ct = msg.response_headers.get_content_type(null);
+                var content_type_params = new HashTable<string, string>(null, null);
+                var ct = msg.response_headers.get_content_type(out content_type_params);
                 res.content_type = ct;
 
                 msg.response_headers.foreach((k, v) => {
@@ -89,15 +90,8 @@ namespace Repose.Services {
                 }
 
                 if (text_encoding == null){
-                    string[] chunks = ct.split(";");
-
-                    foreach (var chunk in chunks) {
-                        string[] segments = chunk.strip().split("=");
-                        if (segments.length > 1 && segments[0].down() == "charset") { 
-                            text_encoding = segments[1].up();
-                            break;
-                        }
-                    }
+                    var cs = content_type_params.get("charset");
+                    if (cs != null && cs != "") text_encoding = cs;
                 }
 
                 var body = new Array<uint8>();

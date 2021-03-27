@@ -21,16 +21,20 @@ namespace Repose.Widgets {
     public class RequestContainer : Gtk.Box {
         [GtkChild] private Gtk.Notebook request_attributes_notebook;
         [GtkChild] private Gtk.Notebook request_type_notebook;
-        //  [GtkChild] private Gtk.ListStore request_type_popover_store;
-        //  [GtkChild] private Gtk.Popover request_type_popover;
-        //  [GtkChild] private Gtk.TreeView request_type_popover_tree_view;
-        //  [GtkChild] private Gtk.SourceView request_text;
+        [GtkChild] private Gtk.ListStore request_type_popover_store;
+        [GtkChild] private Gtk.Popover request_type_popover;
+        [GtkChild] private Gtk.TreeView request_type_popover_tree_view;
+        [GtkChild] private Gtk.SourceView request_text;
+        private Gtk.SourceBuffer request_text_buffer;
 
         private ParamTable param_table;
         private ParamTable header_table;
 
         private ParamTable request_form_data;
         private ParamTable request_form_urlencoded;
+
+        private Gtk.SourceLanguageManager lang_manager;
+        private Gtk.SourceStyleSchemeManager style_manager;
 
         public RequestContainer() {
             param_table = new ParamTable();
@@ -44,6 +48,35 @@ namespace Repose.Widgets {
 
             request_type_notebook.insert_page(request_form_data, new Gtk.Label("Form Data"), 2);
             request_type_notebook.insert_page(request_form_urlencoded, new Gtk.Label("Form Url-Encoded"), 3);
+
+            request_type_popover.position = Gtk.PositionType.TOP;
+
+            lang_manager = new Gtk.SourceLanguageManager();
+            style_manager = new Gtk.SourceStyleSchemeManager();
+            var kate_scheme = style_manager.get_scheme("kate");
+
+            request_text_buffer = (Gtk.SourceBuffer) request_text.buffer;
+            request_text_buffer.set_style_scheme(kate_scheme);
+
+            var selection = request_type_popover_tree_view.get_selection();
+            selection.select_path(new Gtk.TreePath.from_indices(0, 0));
+
+            request_type_popover_tree_view.row_activated.connect(request_type_popover_row_activated);
+        }
+
+        private void request_type_popover_row_activated(Gtk.TreePath path, Gtk.TreeViewColumn column) {
+            Gtk.TreeIter iter;
+            request_type_popover_store.get_iter(out iter, path);
+            Value val;
+            request_type_popover_store.get_value(iter, 1, out val);
+
+            var lang_id = val.get_string();
+            message("Selected request body type: %s", lang_id);
+
+            var language = lang_manager.get_language(lang_id);
+            request_text_buffer.set_language(language);
+
+            request_type_popover.popdown();
         }
     }
     

@@ -48,7 +48,7 @@
         <property name="model">request_type_popover_store</property>
         <property name="headers-visible">False</property>
         <property name="search-column">0</property>
-        <property name="activate-on-single-click">True</property>
+        <property name="activate-on-single-click">1</property>
         <child internal-child="selection">
           <object class="GtkTreeSelection"/>
         </child>
@@ -149,6 +149,10 @@
                     <property name="icon-name">go-up</property>
                     <!-- <property name="relief">none</property> -->
                     <property name="popover">request_type_popover</property>
+                    <property name="width-request">10</property>
+                    <property name="height-request">10</property>
+                    <style>
+                    </style>
                     <!-- <child>
                       <object class="GtkImage">
                         <property name="visible">True</property>

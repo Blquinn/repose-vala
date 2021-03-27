@@ -46,7 +46,6 @@ namespace Repose.Widgets {
         private Models.Response response;
 
         public ResponseContainer(Models.Response response) {
-            set_orientation(Gtk.Orientation.VERTICAL);
             this.response = response;
 
             style_manager = new Gtk.SourceStyleSchemeManager();
@@ -61,10 +60,10 @@ namespace Repose.Widgets {
             // Bindings
 
             response.response_received.connect(on_response_received);
-            //  response.request.bind_property("request_running", response_loading_spinner, "active", BindingFlags.DEFAULT);
-            //  request_loading_overlay
-            response.request.bind_property("request_running", response_loading_spinner, "visible", BindingFlags.DEFAULT);
-            response.request.bind_property("request_running", request_loading_overlay, "visible", BindingFlags.DEFAULT);
+
+            response.request.bind_property("request_running", response_loading_spinner, "visible");
+            response.request.bind_property("request_running", response_loading_spinner, "spinning");
+            response.request.bind_property("request_running", request_loading_overlay, "visible");
         }
 
         private void on_response_received() {
