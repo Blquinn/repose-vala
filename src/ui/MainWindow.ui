@@ -21,7 +21,6 @@
               <object class="GtkNotebook" id="active_requests_notebook">
                 <property name="show-border">0</property>
                 <property name="scrollable">1</property>
-                <property name="vexpand">True</property>
               </object>
             </child>
           </object>
@@ -41,6 +40,7 @@
         <child>
           <object class="GtkButton" id="new_request_button">
             <property name="receives-default">1</property>
+            <property name="tooltip-text">Create a new request.</property>
             <signal name="clicked" handler="on_new_request_button_clicked" swapped="no"/>
             <child>
               <object class="GtkImage">

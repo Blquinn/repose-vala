@@ -32,22 +32,43 @@ namespace Repose.Widgets {
         //  [GtkChild] private Gtk.TreeViewColumn description_column;
         //  [GtkChild] private Gtk.CellRendererText description_column_renderer;
 
-        private Gtk.ListStore store;
+        private Models.ParamTableListStore store;
 
-        public ParamTable() {
-            store = new Gtk.ListStore(3, typeof(string), typeof(string), typeof(string));
-            set_model(store);
-            add_row();
+		public new void set_model(Models.ParamTableListStore? model) {
+            store = model;
+            base.set_model(model);
+            if (model.iter_n_children(null) == 0) {
+                add_row();
+            }
         }
 
         [GtkCallback]
-        private void on_key_column_renderer_edited() {}
+        private void on_key_column_renderer_edited(string path, string text) {
+            Gtk.TreeIter iter;
+            store.get_iter_from_string(out iter, path);
+            store.set_value(iter, Column.KEY, text);
+
+            if (text == "") { // Remove the row
+                store.remove(ref iter);
+            } else { // Add a new row following
+                store.insert(out iter, -1);
+                store.set_valuesv(iter, {0, 1, 2}, {"", "", ""});
+            }
+        }
 
         [GtkCallback]
-        private void on_value_column_renderer_edited() {}
+        private void on_value_column_renderer_edited(string path, string text) {
+            Gtk.TreeIter iter;
+            store.get_iter_from_string(out iter, path);
+            store.set_value(iter, Column.VALUE, text);
+        }
 
         [GtkCallback]
-        private void on_description_column_renderer_edited() {}
+        private void on_description_column_renderer_edited(string path, string text) {
+            Gtk.TreeIter iter;
+            store.get_iter_from_string(out iter, path);
+            store.set_value(iter, Column.DESCRIPTION, text);
+        }
 
         private void add_row() {
             Gtk.TreeIter it;

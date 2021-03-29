@@ -4,6 +4,7 @@ repose_sources = [
   'model/response.vala',
   'model/root_state.vala',
   'model/param_row.vala',
+  'model/param_table_list_store.vala',
   'widgets/main_window.vala',
   'widgets/request_editor.vala',
   'widgets/request_container.vala',

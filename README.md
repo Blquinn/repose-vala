@@ -21,6 +21,7 @@ It is heavily influenced by both Postman and Insomnia, but aims to be much light
 ## TODO (Ideas and PRs are welcome)
 
 - [ ] Persistence
+- [ ] Save responses to tmp storage to reduce memory usage.
 - [ ] Collections and folders
 - [ ] Workspaces
 - [ ] Websockets

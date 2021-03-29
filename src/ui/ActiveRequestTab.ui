@@ -5,13 +5,17 @@
     <child>
       <object class="GtkLabel" id="request_name_label">
         <property name="hexpand">1</property>
-        <property name="label" translatable="yes">label</property>
+        <property name="label" translatable="yes"></property>
+        <property name="width-chars">12</property>
+        <property name="ellipsize">3</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="close_request_button">
         <property name="receives_default">1</property>
+        <property name="margin-start">3</property>
         <signal name="clicked" handler="close_button_clicked" swapped="no"/>
+        <style><class name="circular"/></style>
         <child>
           <object class="GtkImage">
             <property name="icon_name">dialog-close</property>

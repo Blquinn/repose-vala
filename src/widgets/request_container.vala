@@ -36,7 +36,11 @@ namespace Repose.Widgets {
         private Gtk.SourceLanguageManager lang_manager;
         private Gtk.SourceStyleSchemeManager style_manager;
 
-        public RequestContainer() {
+        private Models.RootState root_state;
+
+        public RequestContainer(Models.RootState root_state) {
+            this.root_state = root_state;
+
             param_table = new ParamTable();
             header_table = new ParamTable();
             request_attributes_notebook.prepend_page(header_table, new Gtk.Label("Headers"));
@@ -61,7 +65,46 @@ namespace Repose.Widgets {
             var selection = request_type_popover_tree_view.get_selection();
             selection.select_path(new Gtk.TreePath.from_indices(0, 0));
 
+            // Bindings
+
+            root_state.active_request_changed.connect(on_active_request_changed);
+
             request_type_popover_tree_view.row_activated.connect(request_type_popover_row_activated);
+        }
+
+        private void on_active_request_changed() {
+            var req = root_state.active_request;
+            header_table.set_model(req.headers_store);
+            param_table.set_model(req.params_store);
+            request_form_data.set_model(req.request_bodies.form);
+            request_form_urlencoded.set_model(req.request_bodies.form_url);
+
+            var raw_body = req.request_bodies.raw;
+            request_text_buffer.text = raw_body.body;
+
+            string lang_id = "";
+            switch (raw_body.active_type) {
+            case Models.RawBody.RawBodyType.PLAIN_TEXT:
+                lang_id = "text";
+                break;
+            case Models.RawBody.RawBodyType.JSON:
+                lang_id = "json";
+                break;
+            case Models.RawBody.RawBodyType.JAVASCRIPT:
+                lang_id = "js";
+                break;
+            case Models.RawBody.RawBodyType.XML:
+                lang_id = "xml";
+                break;
+            case Models.RawBody.RawBodyType.XML_TEXT:
+                lang_id = "xml";
+                break;
+            case Models.RawBody.RawBodyType.HTML:
+                lang_id = "html";
+                break;
+            }
+
+            request_text_buffer.set_language(lang_manager.get_language(lang_id));
         }
 
         private void request_type_popover_row_activated(Gtk.TreePath path, Gtk.TreeViewColumn column) {
@@ -72,11 +115,11 @@ namespace Repose.Widgets {
 
             var lang_id = val.get_string();
             message("Selected request body type: %s", lang_id);
+            
+            request_type_popover.popdown();
 
             var language = lang_manager.get_language(lang_id);
             request_text_buffer.set_language(language);
-
-            request_type_popover.popdown();
         }
     }
     

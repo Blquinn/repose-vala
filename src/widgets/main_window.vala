@@ -24,15 +24,16 @@ namespace Repose.Widgets {
     public class MainWindow : Gtk.Window {
 		//  [GtkChild] private Gtk.Paned request_pane;
 		//  [GtkChild] private Gtk.ListBox request_list;
-		//  [GtkChild] private Gtk.Box active_requests_notebook_box;
+		[GtkChild] private Gtk.Box active_requests_notebook_box;
 		[GtkChild] private Gtk.Notebook active_requests_notebook;
 		//  [GtkChild] private Gtk.HeaderBar header_bar;
 		//  [GtkChild] private Gtk.Button new_request_button;
 
+		private RequestEditor request_editor;
 		private Models.RootState root_state;
 
-		public MainWindow (Gtk.Application app) {
-			GLib.Object (application: app);
+		public MainWindow(Gtk.Application app) {
+			GLib.Object(application: app);
 
 			//  try {
 			//  	var icon = new Gdk.Pixbuf.from_resource("/me/blq/Repose/resources/img/nightcap-round-grey-100x100.png");
@@ -42,17 +43,23 @@ namespace Repose.Widgets {
 			//  }
 
 			root_state = new Models.RootState();
+			request_editor = new RequestEditor(root_state);
+			active_requests_notebook_box.append(request_editor);
 
 			// Keep notebook tabs in sync with active_request_items.
 			root_state.active_requests.items_changed.connect(on_active_requests_items_changed);
 			root_state.active_request_changed.connect(on_active_request_changed);
-
-			root_state.add_new_request();
+			active_requests_notebook.switch_page.connect(on_requests_notebook_page_changed);
 		}
 
 		[GtkCallback]
 		private void on_new_request_button_clicked(Gtk.Button btn) {
 			root_state.add_new_request();
+		}
+
+		private void on_requests_notebook_page_changed(Gtk.Widget page_widget, uint page) {
+			message("Notebook changed to page: %d", (int) page);
+			root_state.active_request = (Models.Request)root_state.active_requests.get_object(page);
 		}
 
 		private void on_active_request_changed() {
@@ -61,7 +68,11 @@ namespace Repose.Widgets {
 			uint pos;
 			root_state.active_requests.find(root_state.active_request, out pos);
 
+			message("Notebook changing to position: %d of %d", (int) pos, (int)root_state.active_requests.get_n_items());
+
+			active_requests_notebook.switch_page.disconnect(on_requests_notebook_page_changed);
 			active_requests_notebook.set_current_page((int) pos);
+			active_requests_notebook.switch_page.connect(on_requests_notebook_page_changed);
 		}
 
 		private void on_active_requests_items_changed(uint pos, uint removed, uint added) {
@@ -70,11 +81,14 @@ namespace Repose.Widgets {
 
 			for (int i = 0; i < added; i++) {
 				var req = (Models.Request) root_state.active_requests.get_item(pos+i);
-				active_requests_notebook.append_page(new RequestEditor(root_state, req), new Widgets.ActiveRequestTab(req));
+				active_requests_notebook.append_page(
+					new Gtk.Box(Gtk.Orientation.VERTICAL, 0), 
+					new Widgets.ActiveRequestTab(root_state, req)
+				);
 			}
 
-			if (removed > 0) {
-				warning("We don't handle remove yet.");
+			for (int i = 0; i < removed; i++) {
+				active_requests_notebook.remove_page((int)pos+i);
 			}
 		}
     }

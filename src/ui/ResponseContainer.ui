@@ -97,7 +97,6 @@
                               <object class="GtkSourceView" id="response_text">
                                 <property name="visible">True</property>
                                 <property name="editable">False</property>
-                                <property name="wrap-mode">word-char</property>
                                 <property name="left-margin">2</property>
                                 <property name="right-margin">2</property>
                                 <property name="cursor-visible">False</property>

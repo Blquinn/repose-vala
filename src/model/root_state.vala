@@ -37,6 +37,7 @@ namespace Repose.Models {
 
         public RootState() {
             http_client = new Services.HttpClient();
+            active_request = Request.empty();
         }
 
         public void add_new_request() {
