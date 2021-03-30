@@ -97,7 +97,7 @@ namespace Repose.Widgets {
             }
 
             var uri = new Soup.URI(request.url);
-            if (uri.scheme == "" || uri.host == "") {
+            if (uri == null || uri.scheme == "" || uri.host == "") {
                 url_entry.get_style_context().add_class("error");
                 return;
             }

@@ -119,7 +119,7 @@ namespace Repose.Services {
                         //  yield stream.read_all_async(bts, Priority.DEFAULT, cancel, out bts_read);
                         bts = yield stream.read_bytes_async(4<<10, Priority.HIGH, cancel);
                         res.body_length += bts.length;
-                        message("Read %d bytes from response", bts.length);
+                        debug("Read %d bytes from response", bts.length);
                     } catch (Error e) {
                         var err_msg = "Failed to read response: %s".printf(e.message);
                         warning(err_msg);
@@ -136,7 +136,7 @@ namespace Repose.Services {
 
                     try {
                         yield tmp_file.output_stream.write_bytes_async(bts, Priority.HIGH, cancel);
-                        message("Wrote %d bytes to tmp file.", bts.length);
+                        debug("Wrote %d bytes to tmp file.", bts.length);
                     } catch (Error e) {
                         var err_msg = "Failed to read response: %s".printf(e.message);
                         warning(err_msg);
