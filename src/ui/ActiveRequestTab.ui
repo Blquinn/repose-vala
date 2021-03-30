@@ -10,6 +10,9 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">label</property>
+        <property name="max-width-chars">12</property>
+        <property name="width-chars">12</property>
+        <property name="ellipsize">3</property>
       </object>
       <packing>
         <property name="expand">True</property>

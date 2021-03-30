@@ -73,10 +73,17 @@ namespace Repose.Models {
         public RawBody raw { get; set; default = new RawBody(); }
 
         // ListStore of ParamRow
-        public ListStore form { get; default = new ListStore(typeof(ParamRow)); }
+        public ParamTableListStore form { 
+            get; 
+            default = new ParamTableListStore();
+        }
 
         // ListStore of ParamRow
-        public ListStore form_url { get; default = new ListStore(typeof(ParamRow)); }
+        public ParamTableListStore form_url { 
+            get; 
+            //  default = new ListStore(typeof(ParamRow)); 
+            default = new ParamTableListStore();
+        }
 
         // Binary stores the file path for the binary file.
         public string binary { get; set; default = ""; }
@@ -91,7 +98,12 @@ namespace Repose.Models {
             BINARY,
         }
 
-        public string name { get; set; }
+        public string name { get; set; default = ""; }
+        public string name_display { 
+            get {
+                return name == "" ? "New Request" : name;
+            }
+        }
         public string url { get; set; }
         public string method { get; set; }
         public BodyType active_body_type { get; set; default = BodyType.NONE; }
@@ -99,6 +111,14 @@ namespace Repose.Models {
         public Response response { get; set; }
         public bool request_running { get; set; default = false; }
         public Cancellable? cancellable { get; set; }
+        public ParamTableListStore params_store {
+            get; 
+            default = new ParamTableListStore();
+        }
+        public ParamTableListStore headers_store {
+            get; 
+            default = new ParamTableListStore();
+        }
 
         public Request(string name, string url, string method) {
             this.name = name;
@@ -108,7 +128,7 @@ namespace Repose.Models {
         }
 
         public static Request empty() {
-            return new Request("New Request", "", "GET");
+            return new Request("", "", "GET");
         }
 
         public void cancel() {
