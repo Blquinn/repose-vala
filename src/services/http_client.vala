@@ -23,7 +23,14 @@ namespace Repose.Services {
     public class HttpClient : Object {
 
         public async void do_request(Models.Request req, Models.Response res) { 
-            message("Beggining request %s to %s", req.name, req.url);
+            string url;
+            if (!(req.url.has_prefix("https://") || req.url.has_prefix("http://"))) {
+                url = "http://" + req.url;
+            } else {
+                url = req.url;
+            }
+
+            message("Beggining request %s to %s", req.name, url);
             res.error_text = "";
             res.response_file_path = "";
             res.body_length = 0;
@@ -37,7 +44,7 @@ namespace Repose.Services {
             try {
                 var sess = new Soup.Session();
                 // TODO: Validate url
-                var msg = new Soup.Message(req.method, req.url);
+                var msg = new Soup.Message(req.method, url);
 
                 req.request_running = true;
 

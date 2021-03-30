@@ -22,7 +22,7 @@ namespace Repose.Models {
 
         public signal void response_received();
 
-        public uint status_code { get; set; default = -1; }
+        public uint status_code { get; set; default = 0; }
         public TimeSpan response_time { get; set; default = -1; }
         public string content_type { get; set; }
         public string text_encoding { get; set; }
@@ -32,7 +32,7 @@ namespace Repose.Models {
         //  public Gtk.TextBuffer body { get; set; }
         public string error_text { get; set; }
         public string response_file_path { get; set; default = ""; }
-        public size_t body_length { get; set; }
+        public int64 body_length { get; set; default = -1; }
         public weak Request request { get; set; }
 
         public Response(Request req) {

@@ -52,6 +52,10 @@ namespace Repose.Widgets {
         private Binding loading_spinner_binding;
         private Binding loading_overlay_binding;
 
+        private Binding status_code_binding;
+        private Binding body_length_binding;
+        private Binding response_time_binding;
+
         public ResponseContainer(Models.RootState root_state) {
             this.root_state = root_state;
 
@@ -79,19 +83,56 @@ namespace Repose.Widgets {
         private void bind_request() {
             if (loading_spinner_binding != null) loading_spinner_binding.unbind();
             if (loading_overlay_binding != null) loading_overlay_binding.unbind();
+            if (status_code_binding != null) status_code_binding.unbind();
+            if (body_length_binding != null) body_length_binding.unbind();
+            if (response_time_binding != null) response_time_binding.unbind();
 
             var response = root_state.active_request.response;
             loading_spinner_binding = response.request.bind_property("request_running", response_loading_spinner, "active");
             loading_overlay_binding = response.request.bind_property("request_running", request_loading_overlay, "visible");
             response.response_received.connect(on_response_received);
+
+            status_code_binding = response.bind_property("status_code", response_status_label, "label", 
+                BindingFlags.DEFAULT,
+                (a, from, ref to) => {
+                    to.set_string(format_status_code(from.get_uint()));
+                    return true;
+                });
+            body_length_binding = response.bind_property("body_length", response_size_label, "label", BindingFlags.DEFAULT,
+                (a, from, ref to) => {
+                    to.set_string(format_body_length(from.get_int64()));
+                    return true;
+                });
+            response_time_binding = response.bind_property("response_time", response_time_label, "label", BindingFlags.DEFAULT,
+                (a, from, ref to) => {
+                    to.set_string(format_response_time((TimeSpan)from.get_int64()));
+                    return true;
+                });
+            response_status_label.set_text(format_status_code(response.status_code));
+            response_size_label.set_text(format_body_length(response.body_length));
+            response_time_label.set_text(format_response_time(response.response_time));
+        }
+
+        private string format_status_code(uint status_code) {
+            string fmt_str = "Status: ";
+            if (status_code == 0) return fmt_str + "-";
+            return fmt_str + status_code.to_string();
+        }
+        
+        private string format_body_length(int64 bl) {
+            string fmt_str = "Size: ";
+            if (bl < 0) return fmt_str + "-";
+            return fmt_str + Humanize.bytes((size_t) bl);
+        }
+        
+        private string format_response_time(TimeSpan rt) {
+            string fmt_str = "Time: ";
+            if (rt < 0) return fmt_str + "-";
+            return fmt_str + Humanize.timespan(rt);
         }
 
         private async void on_response_received() {
             var response = root_state.active_request.response;
-
-            response_status_label.set_text("Status: %u".printf(response.status_code));
-            response_size_label.set_text("Size: %s".printf(Humanize.bytes(response.body_length)));
-            response_time_label.set_text("Time: %s".printf(Humanize.timespan(response.response_time)));
             
             set_headers_text();
 
