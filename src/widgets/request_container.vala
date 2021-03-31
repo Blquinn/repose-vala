@@ -17,6 +17,8 @@
  */
 
 namespace Repose.Widgets {
+    using Repose.Models;
+
 	[GtkTemplate(ui = "/me/blq/Repose/ui/RequestContainer.ui")]
     public class RequestContainer : Gtk.Box {
         [GtkChild] private Gtk.Notebook request_attributes_notebook;
@@ -25,7 +27,7 @@ namespace Repose.Widgets {
         [GtkChild] private Gtk.Popover request_type_popover;
         [GtkChild] private Gtk.TreeView request_type_popover_tree_view;
         [GtkChild] private Gtk.SourceView request_text;
-        private Gtk.SourceBuffer request_text_buffer;
+        //  private Gtk.SourceBuffer request_text_buffer;
 
         private ParamTable param_table;
         private ParamTable header_table;
@@ -35,6 +37,7 @@ namespace Repose.Widgets {
 
         private Gtk.SourceLanguageManager lang_manager;
         private Gtk.SourceStyleSchemeManager style_manager;
+        private Gtk.SourceStyleScheme kate_theme;
 
         private Models.RootState root_state;
 
@@ -57,10 +60,7 @@ namespace Repose.Widgets {
 
             lang_manager = new Gtk.SourceLanguageManager();
             style_manager = new Gtk.SourceStyleSchemeManager();
-            var kate_scheme = style_manager.get_scheme("kate");
-
-            request_text_buffer = (Gtk.SourceBuffer) request_text.buffer;
-            request_text_buffer.set_style_scheme(kate_scheme);
+            kate_theme = style_manager.get_scheme("kate");
 
             var selection = request_type_popover_tree_view.get_selection();
             selection.select_path(new Gtk.TreePath.from_indices(0, 0));
@@ -80,31 +80,15 @@ namespace Repose.Widgets {
             request_form_urlencoded.set_model(req.request_bodies.form_url);
 
             var raw_body = req.request_bodies.raw;
-            request_text_buffer.text = raw_body.body;
 
-            string lang_id = "";
-            switch (raw_body.active_type) {
-            case Models.RawBody.RawBodyType.PLAIN_TEXT:
-                lang_id = "text";
-                break;
-            case Models.RawBody.RawBodyType.JSON:
-                lang_id = "json";
-                break;
-            case Models.RawBody.RawBodyType.JAVASCRIPT:
-                lang_id = "js";
-                break;
-            case Models.RawBody.RawBodyType.XML:
-                lang_id = "xml";
-                break;
-            case Models.RawBody.RawBodyType.XML_TEXT:
-                lang_id = "xml";
-                break;
-            case Models.RawBody.RawBodyType.HTML:
-                lang_id = "html";
-                break;
-            }
+            string lang_id = Utils.EditorLangs.RAW_BODY_TYPE_TO_LANG_ID.get(raw_body.active_type);
 
-            request_text_buffer.set_language(lang_manager.get_language(lang_id));
+            raw_body.body.set_language(lang_manager.get_language(lang_id));
+            raw_body.body.set_style_scheme(kate_theme);
+            request_text.buffer = raw_body.body;
+
+            request_attributes_notebook.set_current_page((int) req.active_attribute);
+            request_type_notebook.set_current_page((int) req.active_body_type);
         }
 
         private void request_type_popover_row_activated(Gtk.TreePath path, Gtk.TreeViewColumn column) {
@@ -114,12 +98,63 @@ namespace Repose.Widgets {
             request_type_popover_store.get_value(iter, 1, out val);
 
             var lang_id = val.get_string();
+
             message("Selected request body type: %s", lang_id);
+
+            var source_id = Utils.EditorLangs.LANG_ID_TO_SOURCE_ID.get(lang_id);
             
             request_type_popover.popdown();
 
-            var language = lang_manager.get_language(lang_id);
-            request_text_buffer.set_language(language);
+            var language = lang_manager.get_language(source_id);
+
+            root_state.active_request.request_bodies.raw.body.set_language(language);
+                var active_type = Utils.EditorLangs.LANG_ID_TO_RAW_BODY_TYPE.get(lang_id);
+            root_state.active_request.request_bodies.raw.active_type = active_type; 
+
+            if (lang_id == "text") {
+                root_state.active_request.headers_store.delete_row_by_key("Content-Type");
+            } else {
+                var mime_type = Utils.EditorLangs.RAW_BODY_TYPE_TO_MIME_TYPE.get(active_type);
+                root_state.active_request.headers_store.prepent_or_udpate_row_by_key(
+                    new Models.ParamRow("Content-Type", mime_type, "")
+                );
+            }
+        }
+
+        [GtkCallback]
+        private void on_request_attributes_notebook_switch_page(Gtk.Widget page, uint offset) {
+            switch (offset) {
+            case 0:
+                root_state.active_request.active_attribute = Models.Request.Attribute.PARAMS;
+                break;
+            case 1:
+                root_state.active_request.active_attribute = Models.Request.Attribute.HEADERS;
+                break;
+            case 2:
+                root_state.active_request.active_attribute = Models.Request.Attribute.BODY;
+                break;
+            }
+        }
+
+        [GtkCallback]
+        private void on_request_type_notebook_switch_page(Gtk.Widget page, uint offset) {
+            switch (offset) {
+            case 0:
+                root_state.active_request.active_body_type = Models.Request.BodyType.NONE;
+                break;
+            case 1:
+                root_state.active_request.active_body_type = Models.Request.BodyType.RAW;
+                break;
+            case 2:
+                root_state.active_request.active_body_type = Models.Request.BodyType.FORM;
+                break;
+            case 3:
+                root_state.active_request.active_body_type = Models.Request.BodyType.FORM_URL;
+                break;
+            case 4:
+                root_state.active_request.active_body_type = Models.Request.BodyType.BINARY;
+                break;
+            }
         }
     }
 }

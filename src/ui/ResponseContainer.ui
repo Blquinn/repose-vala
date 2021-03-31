@@ -32,6 +32,7 @@
   </object>
   <template class="ReposeWidgetsResponseContainer" parent="GtkBox">
     <property name="visible">True</property>
+    <property name="can-focus">False</property>
     <child>
       <object class="GtkOverlay">
         <property name="visible">True</property>
@@ -324,7 +325,6 @@
         </child>
         <child type="overlay">
           <object class="GtkBox" id="request_loading_overlay">
-            <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
@@ -361,6 +361,11 @@
           </object>
         </child>
       </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
     </child>
   </template>
 </interface>

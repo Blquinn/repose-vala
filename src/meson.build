@@ -14,6 +14,7 @@ repose_sources = [
   'services/http_client.vala',
   'utils/humanize.vala',
   'utils/hex_dump.vala',
+  'utils/editor_langs.vala',
 ]
 
 vapi_dir = meson.current_source_dir() / 'vapi'
@@ -28,7 +29,9 @@ repose_deps = [
   dependency('gtksourceview-4', required: true),
   dependency('libsoup-2.4', required: true),
   dependency('json-glib-1.0', required: true),
+  dependency('libxml-2.0', required: true),
   dependency('uchardet', required: true),
+  dependency('gee-0.8', version: '>= 0.8.5', required: true),
   cc.find_library('m', required : true),
 ]
 

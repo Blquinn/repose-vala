@@ -28,7 +28,7 @@ namespace Repose.Models {
         }
 
         public RawBodyType active_type { get; set; default = RawBodyType.PLAIN_TEXT; }
-        public string body { get; set; default = ""; }
+        public Gtk.SourceBuffer body { get; set; default = new Gtk.SourceBuffer(null); }
 
         public static string body_type_to_mime(RawBodyType typ) {
             switch (typ) {
@@ -90,6 +90,17 @@ namespace Repose.Models {
     }
     
     public class Request : Object {
+        public enum Tab {
+            REQUEST,
+            RESPONSE
+        }
+
+        public enum Attribute {
+            PARAMS,
+            HEADERS,
+            BODY,
+        }
+
         public enum BodyType {
             NONE,
             RAW,
@@ -106,6 +117,8 @@ namespace Repose.Models {
         }
         public string url { get; set; }
         public string method { get; set; }
+        public Tab active_tab { get; set; default = Tab.REQUEST; }
+        public Attribute active_attribute { get; set; default = Attribute.PARAMS; }
         public BodyType active_body_type { get; set; default = BodyType.NONE; }
         public RequestBodies request_bodies { get; set; default = new RequestBodies(); }
         public Response response { get; set; }

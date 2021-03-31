@@ -48,11 +48,11 @@ namespace Repose.Widgets {
             request_response_stack.add_titled(request_container, "request", "Request");
             request_response_stack.add_titled(response_container, "response", "Response");
 
-
             // Bindings
 
             bind_request();
 
+            request_response_stack.notify.connect(on_response_stack_notify);
             root_state.active_request_changed.connect(on_active_request_changed);
             request_method_combo.changed.connect(on_request_method_combo_changed);
             url_entry.changed.connect(on_url_entry_changed);
@@ -60,6 +60,17 @@ namespace Repose.Widgets {
 
         private void on_active_request_changed() {
             bind_request();
+        }
+
+        private void on_response_stack_notify(ParamSpec param) {
+            if (param.name != "visible-child") return;
+
+            var req = root_state.active_request;
+            if (request_response_stack.visible_child == request_container) {
+                req.active_tab = Models.Request.Tab.REQUEST;
+            } else {
+                req.active_tab = Models.Request.Tab.RESPONSE;
+            }
         }
 
         private void bind_request() {
@@ -72,6 +83,16 @@ namespace Repose.Widgets {
             request_name_entry.text = request.name;
             url_entry.text = request.url;
             request_method_combo.active_id = request.method;
+
+            // Disable animation while changing stack via state change.
+            var dur = request_response_stack.transition_duration;
+            request_response_stack.transition_duration = 0;
+            if (request.active_tab == Models.Request.Tab.REQUEST) {
+                request_response_stack.visible_child = request_container;
+            } else {
+                request_response_stack.visible_child = response_container;
+            }
+            request_response_stack.transition_duration = dur;
 
             name_binding = request.bind_property("name", request_name_entry, "text", BindingFlags.BIDIRECTIONAL);
             //  name_binding = request_name_entry.bind_property("text", request, "name");

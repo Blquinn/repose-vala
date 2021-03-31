@@ -58,13 +58,19 @@
         <property name="show-close-button">True</property>
         <child>
           <object class="GtkButton" id="new_request_button">
-            <property name="label">gtk-add</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="use-stock">True</property>
+            <property name="tooltip-text" translatable="yes">Create new request.</property>
             <property name="always-show-image">True</property>
             <signal name="clicked" handler="on_new_request_button_clicked" swapped="no"/>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="icon-name">gtk-add</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
