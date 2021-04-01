@@ -97,7 +97,7 @@ Select a request in the left hand panel, or create a new request with the button
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="icon-name">gtk-add</property>
+                <property name="icon-name">list-add-symbolic</property>
               </object>
             </child>
           </object>

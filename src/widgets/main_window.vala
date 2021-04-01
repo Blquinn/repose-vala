@@ -49,6 +49,7 @@ namespace Repose.Widgets {
 
 			show_saved_requests_button = new Gtk.ToggleButton();
 			show_saved_requests_button.visible = true;
+			show_saved_requests_button.tooltip_text = "Show or hide the left side-bar.";
 			var srbi = new Gtk.Image.from_icon_name("view-dual-symbolic", Gtk.IconSize.BUTTON);
 			srbi.visible = true;
 			show_saved_requests_button.child = srbi;
