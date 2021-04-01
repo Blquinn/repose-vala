@@ -165,13 +165,16 @@ namespace Repose.Widgets {
                 int64 file_size;
                 try {
                     // TODO: For binary, create a hexdump converter.
-                    message("Converting response text to UTF-8 from %s", response.text_encoding);
 
                     var info = yield file.query_info_async("*", 0);
                     file_size = info.get_size();
 
-                    var converter = new CharsetConverter("UTF-8", response.text_encoding);
-                    input_stream = new ConverterInputStream(yield file.read_async(), converter);
+                    input_stream = yield file.read_async();
+                    if (!(response.text_encoding == "UTF-8" || response.text_encoding == "ASCII")) {
+                        message("Converting response text to UTF-8 from %s", response.text_encoding);
+                        var converter = new CharsetConverter("UTF-8", response.text_encoding);
+                        input_stream = new ConverterInputStream(yield file.read_async(), converter);
+                    }
                 } catch (Error e) {
                     message("Faild to read file: %s", e.message);
                     return;

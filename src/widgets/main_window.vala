@@ -23,19 +23,22 @@ namespace Repose.Widgets {
 	[GtkTemplate(ui = "/me/blq/Repose/ui/MainWindow.ui")]
     public class MainWindow : Gtk.Window {
 		//  [GtkChild] private Gtk.Paned request_pane;
-		//  [GtkChild] private Gtk.ListBox request_list;
+		[GtkChild] private Gtk.ListBox request_list;
 		[GtkChild] private Gtk.Box active_requests_notebook_box;
 		[GtkChild] private Gtk.Notebook active_requests_notebook;
 		[GtkChild] private Gtk.Stack editor_placeholder_stack;
 		[GtkChild] private Gtk.Label no_request_selected_label;
-		//  [GtkChild] private Gtk.HeaderBar header_bar;
+		[GtkChild] private Gtk.HeaderBar header_bar;
 		//  [GtkChild] private Gtk.Button new_request_button;
+		private Gtk.ToggleButton show_saved_requests_button;
 
 		private RequestEditor request_editor;
 		private Models.RootState root_state;
 
 		public MainWindow(Gtk.Application app) {
 			GLib.Object(application: app);
+			
+			root_state = new Models.RootState();
 
 			//  try {
 			//  	var icon = new Gdk.Pixbuf.from_resource("/me/blq/Repose/resources/img/nightcap-round-grey-100x100.png");
@@ -43,9 +46,17 @@ namespace Repose.Widgets {
 			//  } catch (Error e) {
 			//  	warning("Failed to load application icon: %s", e.message);
 			//  }
-			//  editor_placeholder_stack.visible_child = no_request_selected_label;
 
-			root_state = new Models.RootState();
+			show_saved_requests_button = new Gtk.ToggleButton();
+			show_saved_requests_button.visible = true;
+			var srbi = new Gtk.Image.from_icon_name("view-dual-symbolic", Gtk.IconSize.BUTTON);
+			srbi.visible = true;
+			show_saved_requests_button.child = srbi;
+			header_bar.pack_end(show_saved_requests_button);
+
+			root_state.bind_property("is_request_list_open", request_list, "visible");
+			show_saved_requests_button.bind_property("active", root_state, "is_request_list_open");
+
 			request_editor = new RequestEditor(root_state);
 			active_requests_notebook_box.pack_end(request_editor, true, true);
 
