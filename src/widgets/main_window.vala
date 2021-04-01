@@ -66,13 +66,14 @@ namespace Repose.Widgets {
 		}
 
 		private void on_active_request_changed() {
-			message("Active request changed to: %s", root_state.active_request.name);
-
 			if (root_state.active_request == null) {
 				editor_placeholder_stack.visible_child = no_request_selected_label;
+				return;
 			} else {
 				editor_placeholder_stack.visible_child = active_requests_notebook_box;
 			}
+
+			message("Active request changed to: %s", root_state.active_request.name);
 
 			uint pos;
 			root_state.active_requests.find(root_state.active_request, out pos);

@@ -74,6 +74,8 @@ namespace Repose.Widgets {
 
         private void on_active_request_changed() {
             var req = root_state.active_request;
+            if (req == null) return;
+
             header_table.set_model(req.headers_store);
             param_table.set_model(req.params_store);
             request_form_data.set_model(req.request_bodies.form);
@@ -104,6 +106,7 @@ namespace Repose.Widgets {
             var source_id = Utils.EditorLangs.LANG_ID_TO_SOURCE_ID.get(lang_id);
             
             request_type_popover.popdown();
+            request_type_notebook.set_current_page(1);
 
             var language = lang_manager.get_language(source_id);
 

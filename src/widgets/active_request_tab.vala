@@ -48,8 +48,20 @@ namespace Repose.Widgets {
         [GtkCallback]
         private void close_button_clicked(Gtk.Button btn) {
             uint pos;
-            if (root_state.active_requests.find(request, out pos)) {
-                root_state.active_requests.remove(pos);
+            var state = root_state;
+            var reqs = state.active_requests;
+            if (reqs.find(request, out pos)) {
+                var was_active = reqs.get_item(pos) == state.active_request;
+                reqs.remove(pos);
+
+                if (was_active) {
+                    var len = reqs.get_n_items();
+                    if (len > 0) {
+                        state.active_request = (Models.Request) reqs.get_item(0);
+                    } else {
+                        state.active_request = null;
+                    }
+                }
             }
         }
     }

@@ -75,6 +75,8 @@ namespace Repose.Widgets {
         }
 
         private async void on_active_request_changed() {
+            if (root_state.active_request == null) return;
+
             bind_request();
             set_headers_text();
             yield load_response_file(root_state.active_request.response);

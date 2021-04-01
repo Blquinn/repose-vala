@@ -79,6 +79,7 @@ namespace Repose.Widgets {
             if (method_binding != null) method_binding.unbind();
 
             var request = root_state.active_request;
+            if (request == null) return;
 
             request_name_entry.text = request.name;
             url_entry.text = request.url;
