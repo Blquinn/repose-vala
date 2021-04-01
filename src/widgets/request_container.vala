@@ -108,7 +108,7 @@ namespace Repose.Widgets {
             var language = lang_manager.get_language(source_id);
 
             root_state.active_request.request_bodies.raw.body.set_language(language);
-                var active_type = Utils.EditorLangs.LANG_ID_TO_RAW_BODY_TYPE.get(lang_id);
+            var active_type = Utils.EditorLangs.LANG_ID_TO_RAW_BODY_TYPE.get(lang_id);
             root_state.active_request.request_bodies.raw.active_type = active_type; 
 
             if (lang_id == "text") {
@@ -153,6 +153,34 @@ namespace Repose.Widgets {
                 break;
             case 4:
                 root_state.active_request.active_body_type = Models.Request.BodyType.BINARY;
+                break;
+            }
+
+            set_content_type_for_request_type(root_state.active_request.active_body_type);
+        }
+
+        private void set_content_type_for_request_type(Models.Request.BodyType bt) {
+            switch (bt) {
+            case Models.Request.BodyType.NONE:
+                root_state.active_request.headers_store.delete_row_by_key("Content-Type");
+                break;
+            case Models.Request.BodyType.RAW:
+                var active_type = root_state.active_request.request_bodies.raw.active_type;
+                var mime_type = Utils.EditorLangs.RAW_BODY_TYPE_TO_MIME_TYPE.get(active_type);
+                root_state.active_request.headers_store.prepent_or_udpate_row_by_key(
+                    new Models.ParamRow("Content-Type", mime_type, ""));
+                break;
+            case Models.Request.BodyType.FORM:
+                root_state.active_request.headers_store.prepent_or_udpate_row_by_key(
+                    new Models.ParamRow("Content-Type", "application/form-data", ""));
+                break;
+            case Models.Request.BodyType.FORM_URL:
+                root_state.active_request.headers_store.prepent_or_udpate_row_by_key(
+                    new Models.ParamRow("Content-Type", "application/x-www-form-urlencoded", ""));
+                break;
+            case Models.Request.BodyType.BINARY:
+                root_state.active_request.headers_store.prepent_or_udpate_row_by_key(
+                    new Models.ParamRow("Content-Type", "application/octet-stream", ""));
                 break;
             }
         }

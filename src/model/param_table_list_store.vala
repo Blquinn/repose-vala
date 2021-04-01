@@ -21,6 +21,7 @@ namespace Repose.Models {
     using Repose;
 
     public class ParamTableListStore : Gtk.ListStore {
+
         enum Column {
             KEY,
             VALUE,
@@ -69,6 +70,46 @@ namespace Repose.Models {
                     remove(ref iter);
                     return;
                 }
+            } while(iter_next(ref iter));
+        }
+
+        public string url_encode() {
+            var b = new StringBuilder();
+
+            Gtk.TreeIter iter;
+            get_iter_first(out iter);
+
+            bool first = true;
+            do {
+                if (!first) b.append_c('&');
+                first = false;
+
+                Value key;
+                get_value(iter, Column.KEY, out key);
+                Value value;
+                get_value(iter, Column.VALUE, out value);
+
+                b.append(Soup.URI.encode(key.get_string(), null));
+                b.append_c('=');
+                b.append(Soup.URI.encode(value.get_string(), null));
+            } while(iter_next(ref iter));
+
+            return b.str;
+        }
+
+        public delegate void KeyValueDelegate(string key, string value);
+
+        public void foreach(KeyValueDelegate del) {
+            Gtk.TreeIter iter;
+            get_iter_first(out iter);
+
+            do {
+                Value key;
+                get_value(iter, Column.KEY, out key);
+                Value value;
+                get_value(iter, Column.VALUE, out value);
+
+                del(key.get_string(), value.get_string());
             } while(iter_next(ref iter));
         }
     }

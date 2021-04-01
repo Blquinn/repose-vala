@@ -46,9 +46,39 @@ namespace Repose.Services {
                 // TODO: Validate url
                 var msg = new Soup.Message(req.method, url);
 
+                string content_type = null;
+                req.headers_store.foreach((key, value) => {
+                    if (key == "") return;
+                    if (key.down() == "content-type") content_type = value;
+                    msg.request_headers.append(key, value);
+                });
+
+                switch (req.active_body_type) {
+                case Models.Request.BodyType.NONE:
+                    break;
+                case Models.Request.BodyType.RAW:
+                    var body = req.request_bodies.raw.body.text;
+                    //  msg.request_body.data = body.data;
+                    msg.set_request(content_type, Soup.MemoryUse.COPY, body.data);
+                    //  msg.request_body.length = body.data.length;
+                    break;
+                case Models.Request.BodyType.FORM:
+                    //  msg.request_body.data = req.request_bodies.form.url_encode().data;
+                    var body = req.request_bodies.form.url_encode();
+                    msg.set_request(content_type, Soup.MemoryUse.COPY, body.data);
+                    break;
+                case Models.Request.BodyType.FORM_URL:
+                    var body = req.request_bodies.form_url.url_encode();
+                    msg.set_request(content_type, Soup.MemoryUse.COPY, body.data);
+                    break;
+                case Models.Request.BodyType.BINARY:
+                    // TODO: Streaming file uploads.
+                    warning("Binary body type not currently supported.");
+                    break;
+                }
+
                 req.request_running = true;
 
-                // TODO: Implement cancelation.
                 InputStream stream;
                 try {
                     stream = yield sess.send_async(msg, cancel);

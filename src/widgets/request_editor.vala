@@ -85,14 +85,14 @@ namespace Repose.Widgets {
             request_method_combo.active_id = request.method;
 
             // Disable animation while changing stack via state change.
-            var dur = request_response_stack.transition_duration;
-            request_response_stack.transition_duration = 0;
+            var trans = request_response_stack.transition_type;
+            request_response_stack.transition_type = Gtk.StackTransitionType.NONE;
             if (request.active_tab == Models.Request.Tab.REQUEST) {
                 request_response_stack.visible_child = request_container;
             } else {
                 request_response_stack.visible_child = response_container;
             }
-            request_response_stack.transition_duration = dur;
+            request_response_stack.transition_type = trans;
 
             name_binding = request.bind_property("name", request_name_entry, "text", BindingFlags.BIDIRECTIONAL);
             //  name_binding = request_name_entry.bind_property("text", request, "name");

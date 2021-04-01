@@ -245,8 +245,8 @@ namespace Repose.Widgets {
                 lang_id = "xml";
                 break;
             case "text/html":
-                //  lang_id = "xml";
-                lang_id = "html";
+                lang_id = "xml";
+                //  lang_id = "html";
                 break;
             case "application/javascript":
                 lang_id = "js";
