@@ -26,6 +26,8 @@ namespace Repose.Widgets {
 		//  [GtkChild] private Gtk.ListBox request_list;
 		[GtkChild] private Gtk.Box active_requests_notebook_box;
 		[GtkChild] private Gtk.Notebook active_requests_notebook;
+		[GtkChild] private Gtk.Stack editor_placeholder_stack;
+		[GtkChild] private Gtk.Label no_request_selected_label;
 		//  [GtkChild] private Gtk.HeaderBar header_bar;
 		//  [GtkChild] private Gtk.Button new_request_button;
 
@@ -41,6 +43,7 @@ namespace Repose.Widgets {
 			//  } catch (Error e) {
 			//  	warning("Failed to load application icon: %s", e.message);
 			//  }
+			//  editor_placeholder_stack.visible_child = no_request_selected_label;
 
 			root_state = new Models.RootState();
 			request_editor = new RequestEditor(root_state);
@@ -64,6 +67,12 @@ namespace Repose.Widgets {
 
 		private void on_active_request_changed() {
 			message("Active request changed to: %s", root_state.active_request.name);
+
+			if (root_state.active_request == null) {
+				editor_placeholder_stack.visible_child = no_request_selected_label;
+			} else {
+				editor_placeholder_stack.visible_child = active_requests_notebook_box;
+			}
 
 			uint pos;
 			root_state.active_requests.find(root_state.active_request, out pos);
