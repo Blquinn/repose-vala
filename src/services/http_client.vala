@@ -43,8 +43,13 @@ namespace Repose.Services {
 
             try {
                 var sess = new Soup.Session();
-                // TODO: Validate url
-                var msg = new Soup.Message(req.method, url);
+
+                var uri = new Soup.URI(url);
+                // TODO: Don't use hash table.
+
+                uri.set_query(req.params_store.url_encode());
+
+                var msg = new Soup.Message(req.method, uri.to_string(false));
 
                 string content_type = null;
                 req.headers_store.foreach((key, value) => {

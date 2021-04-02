@@ -34,6 +34,7 @@ namespace Repose.Models {
         }
 
         public bool is_request_list_open { get; set; default = false; }
+        public ListStore collections { get; set; default = new ListStore(typeof(CollectionModel)); }
         public ListStore active_requests { get; default = new ListStore(typeof(Request)); }
 
         public RootState() {

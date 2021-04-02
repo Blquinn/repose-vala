@@ -30,3 +30,4 @@ It is heavily influenced by both Postman and Insomnia, but aims to be much light
 - [ ] Write tests
 - [ ] Remove any deps that aren't available through linux PMs
 - [ ] WebKit based previewing for html responses
+- [ ] Upgrade to libsoup3 (for http2 support) when it becomes available.

@@ -40,6 +40,20 @@ namespace Repose.Widgets {
 			
 			root_state = new Models.RootState();
 
+			var col_1 = new Models.CollectionModel();
+			col_1.name = "Collection 1";
+			var req_1 = new Models.Request("Request 1", "https://example.com", "GET");
+			var req_node_1 = new Models.RequestTreeNode(new Models.FolderModel("Folder 1"), req_1);
+			var req_node_2 = new Models.RequestTreeNode(null, req_1);
+			req_node_1.add_child(req_node_2);
+			col_1.populate_collection({req_node_1});
+			//  col_1.add_child(req_node_1);
+			root_state.collections.append(col_1);
+
+			request_list.bind_model(root_state.collections, (collection) => {
+				return new Collection((Models.CollectionModel) collection);
+			});
+
 			//  try {
 			//  	var icon = new Gdk.Pixbuf.from_resource("/me/blq/Repose/resources/img/nightcap-round-grey-100x100.png");
 			//  	set_icon(icon);
