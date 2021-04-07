@@ -35,8 +35,10 @@ repose_deps = [
   dependency('json-glib-1.0', required: true),
   dependency('libxml-2.0', required: true),
   dependency('uchardet', required: true),
+  dependency('libcurl', required: true),
   dependency('gee-0.8', version: '>= 0.8.5', required: true),
   cc.find_library('m', required : true),
+  meson.get_compiler('vala').find_library('posix'),
 ]
 
 gnome = import('gnome')

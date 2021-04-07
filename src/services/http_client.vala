@@ -20,7 +20,46 @@ using Repose;
 using Soup;
 
 namespace Repose.Services {
+    [Compact]
+    private struct buffer_s
+    {
+        uchar[] buffer;
+    }
+
+    private size_t writeMemoryCallback(char* ptr, size_t size, size_t nmemb, void* data)
+    {
+        size_t total_size = size*nmemb;
+        for(int i = 0; i<total_size; i++)
+        {
+            (( buffer_s* ) data).buffer+= ptr[i];
+        }
+        (( buffer_s* ) data).buffer+= 0;
+        return total_size;
+    }
+
     public class HttpClient : Object {
+
+        public async void do_curl_request(Models.Request req) {
+            try {
+                var ret = yield Gee.task<string>(() => {
+                    var handle = new Curl.EasyHandle();
+                    handle.setopt(Curl.Option.URL, req.url);
+                    handle.setopt(Curl.Option.CUSTOMREQUEST, req.method);
+                    buffer_s tmp = buffer_s(){ buffer = new uchar[0] };
+                    handle.setopt(Curl.Option.WRITEFUNCTION, writeMemoryCallback);
+                    handle.setopt(Curl.Option.WRITEDATA, ref tmp);
+
+                    var start = new DateTime.now_local();
+                    handle.perform();
+                    var dur = new DateTime.now_local().difference(start);
+                    message("Curl request took %s", Utils.Humanize.timespan(dur));
+                    //  message("Got curl body %s", (string) tmp.buffer);
+                    return "";
+                }).wait_async();
+            } catch (Error e) {
+                message("Curl error: %s", e.message);
+            }
+        }
 
         public async void do_request(Models.Request req, Models.Response res) { 
             string url;
@@ -30,6 +69,7 @@ namespace Repose.Services {
                 url = req.url;
             }
 
+            yield do_curl_request(req);
             message("Beggining request %s to %s", req.name, url);
             res.error_text = "";
             res.response_file_path = "";

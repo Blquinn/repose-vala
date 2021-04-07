@@ -19,6 +19,7 @@
 namespace Repose.Widgets {
 
     using Repose;
+    using Curl;
 
 	[GtkTemplate(ui = "/me/blq/Repose/ui/ActiveRequestTab.ui")]
     public class ActiveRequestTab : Gtk.Box {
@@ -36,6 +37,17 @@ namespace Repose.Widgets {
             //  request.bind_property("name", request_name_label, "label", BindingFlags.DEFAULT, map_request_name);
             request.notify.connect(on_request_notify);
             set_request_name_label();
+        }
+
+        async void foo (){
+            try {
+                var ret = yield Gee.task<string>(() => {
+                    var handle = new Curl.EasyHandle();
+                    handle.setopt(Curl.Option.URL, "");
+                    handle.perform();
+                    return "";
+                }).wait_async();
+            } catch (Error e) {}
         }
 
         private void on_request_notify(ParamSpec spec) {
