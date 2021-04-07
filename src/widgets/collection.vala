@@ -36,8 +36,6 @@ namespace Repose.Widgets {
 
             requests_tree_view.set_model(model.children);
 
-            //  collection_header_event_box.click
-
             collection_name_label.label = model.name;
             model.bind_property("name", collection_name_label, "label");
             model.bind_property("expanded", collection_revealer, "reveal_child");

@@ -35,7 +35,8 @@ namespace Repose.Widgets {
         //  [GtkChild] private Gtk.Notebook response_notebook;
         [GtkChild] private Gtk.TextView response_headers_text;
         //  [GtkChild] private Gtk.SearchBar response_filter_search_bar;
-        //  [GtkChild] private Gtk.SearchEntry response_filter_search_entry;
+        [GtkChild] private Gtk.Revealer response_filter_search_bar;
+        [GtkChild] private Gtk.SearchEntry response_filter_search_entry;
         [GtkChild] private Gtk.SourceView response_text;
         [GtkChild] private Gtk.TextView response_text_raw;
         //  [GtkChild] private Gtk.ScrolledWindow response_webview_scroll_window;
@@ -43,9 +44,19 @@ namespace Repose.Widgets {
         [GtkChild] private Gtk.Spinner response_loading_spinner;
         [GtkChild] private Gtk.Box request_loading_overlay;
 
+        [GtkChild] private Gtk.Button search_find_previous_button;
+        [GtkChild] private Gtk.Button search_find_next_button;
+
+        [GtkChild] private Gtk.ToggleButton search_use_regex_button;
+        [GtkChild] private Gtk.ToggleButton search_use_path_filter_button;
+
         private Gtk.SourceStyleSchemeManager style_manager;
         private Gtk.SourceLanguageManager language_manager;
         private Gtk.SourceBuffer response_text_buffer;
+
+        private Gtk.SourceSearchContext search_context;
+        private Gtk.TextIter? search_start_iter;
+        private Gtk.TextIter? search_end_iter;
 
         private Models.RootState root_state;
 
@@ -301,10 +312,130 @@ namespace Repose.Widgets {
         }
 
         [GtkCallback]
-        private void on_response_filter_changed() {}
+        private async void on_response_filter_changed() {
+            response_filter_search_entry.get_style_context().remove_class("error");
+
+            var search_text = response_filter_search_entry.text;
+            if (search_text.length < 3) {
+                if (search_context != null) {
+                    search_context.settings.search_text = "";
+                }
+                return;
+            }
+
+            var settings = new Gtk.SourceSearchSettings();
+            settings.search_text = response_filter_search_entry.text;
+            settings.case_sensitive = false;
+            settings.regex_enabled = search_use_regex_button.active;
+            settings.wrap_around = true;
+            search_context = new Gtk.SourceSearchContext(response_text_buffer, settings);
+            search_context.highlight = true;
+            var rex_err = search_context.get_regex_error();
+            if (rex_err != null) {
+                message("Failed to compile search regex: %s", rex_err.message);
+                response_filter_search_entry.get_style_context().add_class("error");
+            }
+
+            response_text_buffer.get_start_iter(out search_start_iter);
+            response_text_buffer.get_end_iter(out search_end_iter);
+
+            yield find_next_search_match();
+
+            //  Gtk.TextIter start;
+            //  response_text_buffer.get_start_iter(out start);
+            //  Gtk.TextIter match_start;
+            //  Gtk.TextIter match_end;
+            //  bool wrapped;
+            //  yield search_context.forward_async(start, null, out match_start, out match_end, out wrapped);
+        }
+
+        private async void find_next_search_match() {
+            if (search_context == null) return;
+
+            try {
+                var found = yield search_context.forward_async(search_end_iter, null, out search_start_iter, out search_end_iter, null);
+                if (!found) return;
+            } catch (Error e) {
+                warning("Failed to find next match: %s", e.message);
+                return;
+            }
+
+            response_text.scroll_to_iter(search_start_iter, 0.1, true, 0.5, 0.5);
+        }
+        
+        private async void find_previous_search_match() {
+            if (search_context == null) return;
+
+            try {
+                var found = yield search_context.backward_async(search_start_iter, null, out search_start_iter, out search_end_iter, null);
+                if (!found) return;
+            } catch (Error e) {
+                warning("Failed to find previous match: %s", e.message);
+                return;
+            }
+
+            response_text.scroll_to_iter(search_start_iter, 0.1, true, 0.5, 0.5);
+        }
 
         [GtkCallback]
-        private void populate_response_text_context_menu(Gtk.Menu menu) {}
+        private async void on_search_find_next_button_clicked() {
+            yield find_next_search_match();
+        }
+
+        [GtkCallback]
+        private async void on_search_find_previous_button_clicked() {
+            yield find_previous_search_match();
+        }
+
+        [GtkCallback]
+        private void populate_response_text_context_menu(Gtk.Menu menu) {
+            var menu_item = new Gtk.MenuItem.with_label("Show response filter.");
+            weak ResponseContainer self = this;
+            menu_item.button_press_event.connect((btn) => {
+                self.on_show_response_filter_button_clicked();
+                return true;
+            });
+            menu_item.show_all();
+            menu.append(menu_item);
+        }
+
+        [GtkCallback]
+        private void on_show_response_filter_button_clicked() {
+            show_filter_bar();
+        }
+
+        private void show_filter_bar() {
+            response_filter_search_bar.reveal_child = !response_filter_search_bar.reveal_child;
+            if (response_filter_search_bar.reveal_child) {
+                response_filter_search_entry.grab_focus();
+            }
+        }
+
+        [GtkCallback]
+        private void on_close_filter_bar_button_clicked() {
+            close_filter_bar();
+        }
+
+        [GtkCallback]
+        private void on_response_filter_search_entry_stop_search() {
+            close_filter_bar();
+        }
+
+        private void close_filter_bar() {
+            response_filter_search_bar.reveal_child = false;
+            search_context = null;
+        }
+
+        [GtkCallback]
+        private async void on_response_filter_search_entry_activate() {
+            yield find_next_search_match();
+        }
+
+        [GtkCallback]
+        private bool on_response_text_key_press_event(Gdk.EventKey key) {
+            show_filter_bar();
+            return true;
+        }
 
         [GtkCallback]
         private void on_cancel_request_button_clicked(Gtk.Button btn) {
@@ -313,5 +444,4 @@ namespace Repose.Widgets {
             response.request.cancel();
         }
     }
-
 }
