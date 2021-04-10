@@ -37,7 +37,7 @@ namespace Repose.Widgets {
 
 		public MainWindow(Gtk.Application app) {
 			GLib.Object(application: app);
-			
+
 			root_state = new Models.RootState();
 
 			var col_1 = new Models.CollectionModel();
