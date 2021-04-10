@@ -17,6 +17,7 @@
  */
 
 int main (string[] args) {
+	message("Starting Repose application.");
 	var app = new Gtk.Application("me.blq.Repose", ApplicationFlags.FLAGS_NONE);
 
 	typeof(Gtk.SourceView).ensure();
@@ -28,6 +29,7 @@ int main (string[] args) {
 
 		var win = app.active_window;
 		if (win == null) {
+			message("Creating application window.");
 			win = new Repose.Widgets.MainWindow(app);
 		}
 		win.present();

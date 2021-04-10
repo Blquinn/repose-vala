@@ -45,7 +45,6 @@ namespace Repose.Services {
                 var sess = new Soup.Session();
 
                 var uri = new Soup.URI(url);
-                // TODO: Don't use hash table.
 
                 uri.set_query(req.params_store.url_encode());
 
@@ -63,12 +62,9 @@ namespace Repose.Services {
                     break;
                 case Models.Request.BodyType.RAW:
                     var body = req.request_bodies.raw.body.text;
-                    //  msg.request_body.data = body.data;
                     msg.set_request(content_type, Soup.MemoryUse.COPY, body.data);
-                    //  msg.request_body.length = body.data.length;
                     break;
                 case Models.Request.BodyType.FORM:
-                    //  msg.request_body.data = req.request_bodies.form.url_encode().data;
                     var body = req.request_bodies.form.url_encode();
                     msg.set_request(content_type, Soup.MemoryUse.COPY, body.data);
                     break;

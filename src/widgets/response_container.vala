@@ -34,7 +34,6 @@ namespace Repose.Widgets {
         [GtkChild] private Gtk.Label response_size_label;
         //  [GtkChild] private Gtk.Notebook response_notebook;
         [GtkChild] private Gtk.TextView response_headers_text;
-        //  [GtkChild] private Gtk.SearchBar response_filter_search_bar;
         [GtkChild] private Gtk.Revealer response_filter_search_bar;
         [GtkChild] private Gtk.SearchEntry response_filter_search_entry;
         [GtkChild] private Gtk.SourceView response_text;
@@ -44,11 +43,12 @@ namespace Repose.Widgets {
         [GtkChild] private Gtk.Spinner response_loading_spinner;
         [GtkChild] private Gtk.Box request_loading_overlay;
 
-        [GtkChild] private Gtk.Button search_find_previous_button;
-        [GtkChild] private Gtk.Button search_find_next_button;
+        //  [GtkChild] private Gtk.Button search_find_previous_button;
+        //  [GtkChild] private Gtk.Button search_find_next_button;
 
         [GtkChild] private Gtk.ToggleButton search_use_regex_button;
         [GtkChild] private Gtk.ToggleButton search_use_path_filter_button;
+        //  [GtkChild] private Gtk.ToggleButton search_use_text_button;
 
         private Gtk.SourceStyleSchemeManager style_manager;
         private Gtk.SourceLanguageManager language_manager;
@@ -66,6 +66,10 @@ namespace Repose.Widgets {
         private Binding status_code_binding;
         private Binding body_length_binding;
         private Binding response_time_binding;
+
+        // TODO: Fix response_received handler getting called twice and
+        // remove this hack.
+        private bool loading_response_file = false;
 
         public ResponseContainer(Models.RootState root_state) {
             this.root_state = root_state;
@@ -86,6 +90,8 @@ namespace Repose.Widgets {
         }
 
         private async void on_active_request_changed() {
+            debug("Active request changed.");
+
             if (root_state.active_request == null) return;
 
             bind_request();
@@ -145,6 +151,8 @@ namespace Repose.Widgets {
         }
 
         private async void on_response_received() {
+            debug("Response received.");
+
             var response = root_state.active_request.response;
             
             set_headers_text();
@@ -164,11 +172,16 @@ namespace Repose.Widgets {
 
         // Loads the response file, if it exists, into the response buffers.
         private async void load_response_file(Models.Response response) {
+            if (loading_response_file) return;
+
             response_text_buffer.text = "";
             response_text_raw.buffer.text = "";
 
-            if (response.response_file_path != "") {
-                message("Loading response data from %s", response.response_file_path);
+            if (response.response_file_path == "") return;
+
+            loading_response_file = true;
+            try {
+                debug("Loading response data from %s", response.response_file_path);
 
                 var file = File.new_for_path(response.response_file_path);
 
@@ -216,7 +229,72 @@ namespace Repose.Widgets {
                 }
 
                 var body_text = (string)body.data;
-                //  int max_len = 0;
+
+                // Only filter if the filter bar is open and filter is active.
+                if (response_filter_search_bar.child_revealed &&
+                    search_use_path_filter_button.active && 
+                    response_filter_search_entry.text != "") 
+                {
+                    switch (response.content_type) {
+                    case "application/json":
+                        debug("Applying json filter");
+                        try {
+                            var root = Json.from_string(body_text);
+                            var filtered = Json.Path.query(response_filter_search_entry.text, root);
+                            body_text = Json.to_string(filtered, true);
+                        } catch (Error e) {
+                            message("Failed to filter json data: %s", e.message);
+                        }
+                        break;
+                    case "text/xml":
+                    case "application/xml":
+                    case "text/html":
+                        debug("Using XPath filter.");
+                        Xml.Doc* doc;
+                        Xml.XPath.Object* res;
+                        try {
+                            if (response.content_type == "text/html") {
+                                doc = Html.Doc.read_doc(body_text, response.request.url, "UTF-8");
+                            } else {
+                                doc = Xml.Parser.parse_doc(body_text);
+                            }
+                            if (doc == null) {
+                                message("Failed to parse xml document.");
+                                break;
+                            }
+
+                            var cntx = new Xml.XPath.Context(doc);
+                            res = cntx.eval_expression(response_filter_search_entry.text);
+                            if (res == null) {
+                                message("Failed to parse xml path.");
+                                break;
+                            }
+
+                            assert(res != null);
+                            assert(res->type == Xml.XPath.ObjectType.NODESET);
+                            assert(res->nodesetval != null);
+
+                            var new_body = new StringBuilder();
+                            message("nodelen: %d",res->nodesetval->length());
+                            for (int i = 0; i < res->nodesetval->length(); i++) {
+                                var node = res->nodesetval->item(i);
+                                var buf = new Xml.Buffer();
+                                buf.node_dump(doc, node, 0, 1);
+                                new_body.append(buf.content());
+                                if (res->nodesetval->length() > 1) new_body.append_c('\n');
+                            }
+                            
+                            body_text = new_body.str;
+                        } finally {
+                            delete doc;
+                            delete res;
+                        }
+                        break;
+                    default:
+                        break;
+                    }
+                }
+
                 bool over_max = false;
                 int line_len = 0;
                 int iters = 0;
@@ -240,6 +318,8 @@ namespace Repose.Widgets {
                 raw_buf.text = body_text;
 
                 set_pretty_response();
+            } finally {
+                loading_response_file = false;
             }
         }
 
@@ -278,7 +358,8 @@ namespace Repose.Widgets {
                 var raw = response_text_raw.buffer.text;
                 try {
                     var root = Json.from_string(raw);
-                    var pretty = Json.to_string(root, true);
+                    string pretty = "";
+                    if (root != null) pretty = Json.to_string(root, true);
                     response_text_buffer.set_text(pretty);
                 } catch (Error e) {
                     response_text_buffer.set_text(raw);
@@ -315,6 +396,9 @@ namespace Repose.Widgets {
         private async void on_response_filter_changed() {
             response_filter_search_entry.get_style_context().remove_class("error");
 
+            // Filter will be applied when enter button is pressed.
+            if (search_use_path_filter_button.active) return;
+
             var search_text = response_filter_search_entry.text;
             if (search_text.length < 3) {
                 if (search_context != null) {
@@ -340,17 +424,10 @@ namespace Repose.Widgets {
             response_text_buffer.get_end_iter(out search_end_iter);
 
             yield find_next_search_match();
-
-            //  Gtk.TextIter start;
-            //  response_text_buffer.get_start_iter(out start);
-            //  Gtk.TextIter match_start;
-            //  Gtk.TextIter match_end;
-            //  bool wrapped;
-            //  yield search_context.forward_async(start, null, out match_start, out match_end, out wrapped);
         }
 
         private async void find_next_search_match() {
-            if (search_context == null) return;
+            if (search_context == null || search_context.occurrences_count == 0) return;
 
             try {
                 var found = yield search_context.forward_async(search_end_iter, null, out search_start_iter, out search_end_iter, null);
@@ -364,7 +441,7 @@ namespace Repose.Widgets {
         }
         
         private async void find_previous_search_match() {
-            if (search_context == null) return;
+            if (search_context == null || search_context.occurrences_count == 0) return;
 
             try {
                 var found = yield search_context.backward_async(search_start_iter, null, out search_start_iter, out search_end_iter, null);
@@ -412,22 +489,37 @@ namespace Repose.Widgets {
         }
 
         [GtkCallback]
-        private void on_close_filter_bar_button_clicked() {
-            close_filter_bar();
+        private async void on_close_filter_bar_button_clicked() {
+            yield close_filter_bar();
         }
 
         [GtkCallback]
-        private void on_response_filter_search_entry_stop_search() {
-            close_filter_bar();
+        private async void on_response_filter_search_entry_stop_search() {
+            yield close_filter_bar();
         }
 
-        private void close_filter_bar() {
+        private async void close_filter_bar() {
+            debug("Closing filter bar.");
+            // Clear search.
             response_filter_search_bar.reveal_child = false;
             search_context = null;
+            if (search_use_path_filter_button.active) {
+                // Reload file to clear filter when we close the filter bar.
+                yield load_response_file(root_state.active_request.response);
+            }
         }
 
         [GtkCallback]
         private async void on_response_filter_search_entry_activate() {
+            debug("Response filter entry activated.");
+
+            // Filter
+            if (search_use_path_filter_button.active) {
+                yield load_response_file(root_state.active_request.response);
+                return;
+            }
+
+            // Search
             yield find_next_search_match();
         }
 

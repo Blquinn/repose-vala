@@ -159,37 +159,75 @@
                                     <property name="margin-bottom">5</property>
                                     <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkToggleButton" id="search_use_path_filter_button">
-                                        <property name="label" translatable="yes">{..}</property>
+                                      <object class="GtkBox">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="receives-default">True</property>
-                                        <property name="tooltip-text" translatable="yes">Enable JSONPath or XPath filter.</property>
+                                        <property name="can-focus">False</property>
+                                        <child>
+                                          <object class="GtkRadioButton" id="search_use_path_filter_button">
+                                            <property name="label" translatable="yes">{..}</property>
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="receives-default">False</property>
+                                            <property name="tooltip-text" translatable="yes">Filter using JSONPath, or XPath.</property>
+                                            <property name="relief">none</property>
+                                            <property name="draw-indicator">False</property>
+                                            <property name="group">search_use_text_button</property>
+                                            <style>
+                                              <class name="flat"/>
+                                            </style>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkRadioButton" id="search_use_regex_button">
+                                            <property name="label" translatable="yes">.*</property>
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="receives-default">False</property>
+                                            <property name="tooltip-text" translatable="yes">Find using regex.</property>
+                                            <property name="draw-indicator">False</property>
+                                            <property name="group">search_use_text_button</property>
+                                            <style>
+                                              <class name="flat"/>
+                                            </style>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkRadioButton" id="search_use_text_button">
+                                            <property name="label" translatable="yes">abc</property>
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="receives-default">False</property>
+                                            <property name="tooltip-text" translatable="yes">Find using plain text.</property>
+                                            <property name="active">True</property>
+                                            <property name="draw-indicator">False</property>
+                                            <style>
+                                              <class name="flat"/>
+                                            </style>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">2</property>
+                                          </packing>
+                                        </child>
                                         <style>
-                                          <class name="flat"/>
+                                          <class name="linked"/>
                                         </style>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
                                         <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkToggleButton" id="search_use_regex_button">
-                                        <property name="label" translatable="yes">.*</property>
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="receives-default">True</property>
-                                        <property name="tooltip-text" translatable="yes">Enable regex based search.</property>
-                                        <style>
-                                          <class name="flat"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                     <child>

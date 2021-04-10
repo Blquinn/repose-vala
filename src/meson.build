@@ -23,6 +23,7 @@ repose_sources = [
 
 vapi_dir = meson.current_source_dir() / 'vapi'
 
+add_project_arguments('-DG_LOG_DOMAIN="Repose"', language : 'c')
 add_project_arguments(['--vapidir', vapi_dir], language: 'vala')
 
 cc = meson.get_compiler('c')

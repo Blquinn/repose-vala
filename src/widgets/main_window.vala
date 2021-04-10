@@ -87,7 +87,7 @@ namespace Repose.Widgets {
 		}
 
 		private void on_requests_notebook_page_changed(Gtk.Widget page_widget, uint page) {
-			message("Notebook changed to page: %d", (int) page);
+			debug("Notebook changed to page: %d", (int) page);
 			root_state.active_request = (Models.Request)root_state.active_requests.get_object(page);
 		}
 
@@ -99,12 +99,12 @@ namespace Repose.Widgets {
 				editor_placeholder_stack.visible_child = active_requests_notebook_box;
 			}
 
-			message("Active request changed to: %s", root_state.active_request.name);
+			debug("Active request changed to: %s", root_state.active_request.name);
 
 			uint pos;
 			root_state.active_requests.find(root_state.active_request, out pos);
 
-			message("Notebook changing to position: %d of %d", (int) pos, (int)root_state.active_requests.get_n_items());
+			debug("Notebook changing to position: %d of %d", (int) pos, (int)root_state.active_requests.get_n_items());
 
 			active_requests_notebook.switch_page.disconnect(on_requests_notebook_page_changed);
 			active_requests_notebook.set_current_page((int) pos);
@@ -113,7 +113,7 @@ namespace Repose.Widgets {
 
 		private void on_active_requests_items_changed(uint pos, uint removed, uint added) {
 			// Assume only 1 item changing at a time.
-			message("Active requests changed pos: %u, removed: %u, added: %u", pos, removed, added);
+			debug("Active requests changed pos: %u, removed: %u, added: %u", pos, removed, added);
 
 			for (int i = 0; i < added; i++) {
 				var req = (Models.Request) root_state.active_requests.get_item(pos+i);
