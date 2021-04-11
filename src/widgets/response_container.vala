@@ -27,32 +27,32 @@ namespace Repose.Widgets {
         private static string MAX_BODY_SIZE_HR = Utils.Humanize.bytes(MAX_BODY_SIZE);
         private const size_t MAX_LINE_LEN = 5000;
 
-        //  [GtkChild] private Gtk.PopoverMenu response_menu_popover;
-        //  [GtkChild] private Gtk.AccelLabel response_menu_toggle_filter;
-        [GtkChild] private Gtk.Label response_status_label;
-        [GtkChild] private Gtk.Label response_time_label;
-        [GtkChild] private Gtk.Label response_size_label;
-        //  [GtkChild] private Gtk.Notebook response_notebook;
-        [GtkChild] private Gtk.TextView response_headers_text;
-        [GtkChild] private Gtk.Revealer response_filter_search_bar;
-        [GtkChild] private Gtk.SearchEntry response_filter_entry;
-        [GtkChild] private Gtk.SearchEntry response_search_entry;
-        [GtkChild] private Gtk.SourceView response_text;
-        [GtkChild] private Gtk.TextView response_text_raw;
-        //  [GtkChild] private Gtk.ScrolledWindow response_webview_scroll_window;
-        //  [GtkChild] private Gtk.MenuButton response_menu_button;
-        [GtkChild] private Gtk.Spinner response_loading_spinner;
-        [GtkChild] private Gtk.Box request_loading_overlay;
+        //  [GtkChild] private unowned Gtk.PopoverMenu response_menu_popover;
+        //  [GtkChild] private unowned Gtk.AccelLabel response_menu_toggle_filter;
+        [GtkChild] private unowned Gtk.Label response_status_label;
+        [GtkChild] private unowned Gtk.Label response_time_label;
+        [GtkChild] private unowned Gtk.Label response_size_label;
+        //  [GtkChild] private unowned Gtk.Notebook response_notebook;
+        [GtkChild] private unowned Gtk.TextView response_headers_text;
+        [GtkChild] private unowned Gtk.Revealer response_filter_search_bar;
+        [GtkChild] private unowned Gtk.SearchEntry response_filter_entry;
+        [GtkChild] private unowned Gtk.SearchEntry response_search_entry;
+        [GtkChild] private unowned Gtk.SourceView response_text;
+        [GtkChild] private unowned Gtk.TextView response_text_raw;
+        //  [GtkChild] private unowned Gtk.ScrolledWindow response_webview_scroll_window;
+        //  [GtkChild] private unowned Gtk.MenuButton response_menu_button;
+        [GtkChild] private unowned Gtk.Spinner response_loading_spinner;
+        [GtkChild] private unowned Gtk.Box request_loading_overlay;
 
-        //  [GtkChild] private Gtk.Button search_find_previous_button;
-        //  [GtkChild] private Gtk.Button search_find_next_button;
+        //  [GtkChild] private unowned Gtk.Button search_find_previous_button;
+        //  [GtkChild] private unowned Gtk.Button search_find_next_button;
 
-        [GtkChild] private Gtk.ToggleButton search_use_regex_button;
-        //  [GtkChild] private Gtk.ToggleButton search_use_text_button;
-        [GtkChild] private Gtk.ToggleButton filter_use_path_filter_button;
-        [GtkChild] private Gtk.ToggleButton filter_use_regex_button;
-        [GtkChild] private Gtk.ToggleButton filter_use_glob_button;
-        //  [GtkChild] private Gtk.ToggleButton filter_use_text_button;
+        [GtkChild] private unowned Gtk.ToggleButton search_use_regex_button;
+        //  [GtkChild] private unowned Gtk.ToggleButton search_use_text_button;
+        [GtkChild] private unowned Gtk.ToggleButton filter_use_path_filter_button;
+        [GtkChild] private unowned Gtk.ToggleButton filter_use_regex_button;
+        [GtkChild] private unowned Gtk.ToggleButton filter_use_glob_button;
+        //  [GtkChild] private unowned Gtk.ToggleButton filter_use_text_button;
 
         private Gtk.SourceStyleSchemeManager style_manager;
         private Gtk.SourceLanguageManager language_manager;

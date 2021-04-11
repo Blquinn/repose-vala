@@ -22,14 +22,14 @@ namespace Repose.Widgets {
 
 	[GtkTemplate(ui = "/me/blq/Repose/ui/MainWindow.ui")]
     public class MainWindow : Gtk.Window {
-		//  [GtkChild] private Gtk.Paned request_pane;
-		[GtkChild] private Gtk.ListBox request_list;
-		[GtkChild] private Gtk.Box active_requests_notebook_box;
-		[GtkChild] private Gtk.Notebook active_requests_notebook;
-		[GtkChild] private Gtk.Stack editor_placeholder_stack;
-		[GtkChild] private Gtk.Label no_request_selected_label;
-		[GtkChild] private Gtk.HeaderBar header_bar;
-		//  [GtkChild] private Gtk.Button new_request_button;
+		//  [GtkChild] private unowned Gtk.Paned request_pane;
+		[GtkChild] private unowned Gtk.ListBox request_list;
+		[GtkChild] private unowned Gtk.Box active_requests_notebook_box;
+		[GtkChild] private unowned Gtk.Notebook active_requests_notebook;
+		[GtkChild] private unowned Gtk.Stack editor_placeholder_stack;
+		[GtkChild] private unowned Gtk.Label no_request_selected_label;
+		[GtkChild] private unowned Gtk.HeaderBar header_bar;
+		//  [GtkChild] private unowned Gtk.Button new_request_button;
 		private Gtk.ToggleButton show_saved_requests_button;
 
 		private RequestEditor request_editor;

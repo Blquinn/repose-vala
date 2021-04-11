@@ -22,8 +22,7 @@ namespace Repose.Widgets {
 
 	[GtkTemplate(ui = "/me/blq/Repose/ui/ActiveRequestTab.ui")]
     public class ActiveRequestTab : Gtk.Box {
-        [GtkChild]
-        private Gtk.Label request_name_label;
+        [GtkChild] private unowned Gtk.Label request_name_label;
 
         private Models.RootState root_state;
         private Models.Request request;

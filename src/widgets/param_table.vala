@@ -25,12 +25,12 @@ namespace Repose.Widgets {
             DESCRIPTION,
         }
 
-        //  [GtkChild] private Gtk.TreeViewColumn key_column;
-        //  [GtkChild] private Gtk.CellRendererText key_column_renderer;
-        //  [GtkChild] private Gtk.TreeViewColumn value_column;
-        //  [GtkChild] private Gtk.CellRendererText value_column_renderer;
-        //  [GtkChild] private Gtk.TreeViewColumn description_column;
-        //  [GtkChild] private Gtk.CellRendererText description_column_renderer;
+        //  [GtkChild] private unowned Gtk.TreeViewColumn key_column;
+        //  [GtkChild] private unowned Gtk.CellRendererText key_column_renderer;
+        //  [GtkChild] private unowned Gtk.TreeViewColumn value_column;
+        //  [GtkChild] private unowned Gtk.CellRendererText value_column_renderer;
+        //  [GtkChild] private unowned Gtk.TreeViewColumn description_column;
+        //  [GtkChild] private unowned Gtk.CellRendererText description_column_renderer;
 
         private Models.ParamTableListStore store;
 

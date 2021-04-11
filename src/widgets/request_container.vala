@@ -21,12 +21,12 @@ namespace Repose.Widgets {
 
 	[GtkTemplate(ui = "/me/blq/Repose/ui/RequestContainer.ui")]
     public class RequestContainer : Gtk.Box {
-        [GtkChild] private Gtk.Notebook request_attributes_notebook;
-        [GtkChild] private Gtk.Notebook request_type_notebook;
-        [GtkChild] private Gtk.ListStore request_type_popover_store;
-        [GtkChild] private Gtk.Popover request_type_popover;
-        [GtkChild] private Gtk.TreeView request_type_popover_tree_view;
-        [GtkChild] private Gtk.SourceView request_text;
+        [GtkChild] private unowned Gtk.Notebook request_attributes_notebook;
+        [GtkChild] private unowned Gtk.Notebook request_type_notebook;
+        [GtkChild] private unowned Gtk.ListStore request_type_popover_store;
+        [GtkChild] private unowned Gtk.Popover request_type_popover;
+        [GtkChild] private unowned Gtk.TreeView request_type_popover_tree_view;
+        [GtkChild] private unowned Gtk.SourceView request_text;
         //  private Gtk.SourceBuffer request_text_buffer;
 
         private ParamTable param_table;

@@ -24,13 +24,13 @@ namespace Repose.Widgets {
 
         private Models.RootState root_state;
 
-        [GtkChild] private Gtk.Stack request_response_stack;
-        [GtkChild] private Gtk.Entry request_name_entry;
-        //  [GtkChild] private Gtk.ComboBox request_method_combo;
-        [GtkChild] private Gtk.ComboBoxText request_method_combo;
-        [GtkChild] private Gtk.Entry url_entry;
-        [GtkChild] private Gtk.Button send_button;
-        //  [GtkChild] private Gtk.Button save_button;
+        [GtkChild] private unowned Gtk.Stack request_response_stack;
+        [GtkChild] private unowned Gtk.Entry request_name_entry;
+        //  [GtkChild] private unowned Gtk.ComboBox request_method_combo;
+        [GtkChild] private unowned Gtk.ComboBoxText request_method_combo;
+        [GtkChild] private unowned Gtk.Entry url_entry;
+        [GtkChild] private unowned Gtk.Button send_button;
+        //  [GtkChild] private unowned Gtk.Button save_button;
 
         private RequestContainer request_container;
         private ResponseContainer response_container;

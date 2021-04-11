@@ -22,12 +22,12 @@ namespace Repose.Widgets {
 
 	[GtkTemplate(ui = "/me/blq/Repose/ui/Collection.ui")]
     public class Collection : Gtk.Box {
-        //  [GtkChild] private Gtk.TreeStore requests_tree_store;
-        //  [GtkChild] private Gtk.EventBox collection_header_event_box;
-        [GtkChild] private Gtk.Label collection_name_label;
-        [GtkChild] private Gtk.Revealer collection_revealer;
-        [GtkChild] private Gtk.TreeView requests_tree_view;
-        //  [GtkChild] private Gtk.TreeViewColumn request_name_column;
+        //  [GtkChild] private unowned Gtk.TreeStore requests_tree_store;
+        //  [GtkChild] private unowned Gtk.EventBox collection_header_event_box;
+        [GtkChild] private unowned Gtk.Label collection_name_label;
+        [GtkChild] private unowned Gtk.Revealer collection_revealer;
+        [GtkChild] private unowned Gtk.TreeView requests_tree_view;
+        //  [GtkChild] private unowned Gtk.TreeViewColumn request_name_column;
 
         private Models.CollectionModel model;
 
