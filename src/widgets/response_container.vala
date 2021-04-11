@@ -580,8 +580,11 @@ namespace Repose.Widgets {
 
         [GtkCallback]
         private bool on_response_text_key_press_event(Gdk.EventKey key) {
+            if ((key.state & Gdk.ModifierType.CONTROL_MASK) == 0) return true;
+            if (key.keyval != Gdk.Key.f) return true;
+
             show_filter_bar();
-            return true;
+            return false;
         }
 
         [GtkCallback]

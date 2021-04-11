@@ -20,6 +20,8 @@ It is heavily influenced by both Postman and Insomnia, but aims to be much light
 
 ## TODO (Ideas and PRs are welcome)
 
+- [ ] Pretty print xml + html
+- [ ] Make response filter pane part of request state.
 - [ ] Persistence
 - [ ] Collections and folders
 - [ ] Workspaces
