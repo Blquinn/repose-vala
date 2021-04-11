@@ -154,144 +154,313 @@
                                   <object class="GtkBox">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="halign">center</property>
-                                    <property name="margin-top">5</property>
-                                    <property name="margin-bottom">5</property>
+                                    <property name="orientation">vertical</property>
                                     <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkBox">
+                                      <!-- n-columns=4 n-rows=2 -->
+                                      <object class="GtkGrid">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="halign">center</property>
+                                        <property name="margin-bottom">3</property>
+                                        <property name="row-spacing">3</property>
+                                        <property name="column-spacing">3</property>
                                         <child>
-                                          <object class="GtkRadioButton" id="search_use_path_filter_button">
-                                            <property name="label" translatable="yes">{..}</property>
+                                          <object class="GtkBox">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="halign">center</property>
+                                            <property name="margin-top">5</property>
+                                            <property name="margin-bottom">5</property>
+                                            <property name="spacing">3</property>
+                                            <child>
+                                              <object class="GtkButton" id="search_find_previous_button">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="receives-default">True</property>
+                                                <property name="tooltip-text" translatable="yes">Previous match.</property>
+                                                <signal name="clicked" handler="on_search_find_previous_button_clicked" swapped="no"/>
+                                                <child>
+                                                  <object class="GtkImage">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="icon-name">go-up-symbolic</property>
+                                                  </object>
+                                                </child>
+                                                <style>
+                                                  <class name="flat"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">3</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkButton" id="search_find_next_button">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="receives-default">True</property>
+                                                <property name="tooltip-text" translatable="yes">Next match.</property>
+                                                <signal name="clicked" handler="on_search_find_next_button_clicked" swapped="no"/>
+                                                <child>
+                                                  <object class="GtkImage">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="icon-name">go-down-symbolic</property>
+                                                  </object>
+                                                </child>
+                                                <style>
+                                                  <class name="flat"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">4</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">3</property>
+                                            <property name="top-attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkSearchEntry" id="response_search_entry">
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
-                                            <property name="receives-default">False</property>
-                                            <property name="tooltip-text" translatable="yes">Filter using JSONPath, or XPath.</property>
-                                            <property name="relief">none</property>
-                                            <property name="draw-indicator">False</property>
-                                            <property name="group">search_use_text_button</property>
+                                            <property name="valign">center</property>
+                                            <property name="max-width-chars">30</property>
+                                            <property name="primary-icon-name">edit-find-symbolic</property>
+                                            <property name="primary-icon-activatable">False</property>
+                                            <property name="primary-icon-sensitive">False</property>
+                                            <signal name="activate" handler="on_response_search_entry_activate" swapped="no"/>
+                                            <signal name="search-changed" handler="on_response_search_entry_search_changed" swapped="no"/>
+                                            <signal name="stop-search" handler="on_response_search_entry_stop_search" swapped="no"/>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">2</property>
+                                            <property name="top-attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="valign">center</property>
+                                            <child>
+                                              <object class="GtkRadioButton" id="search_use_regex_button">
+                                                <property name="label" translatable="yes">.*</property>
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="receives-default">False</property>
+                                                <property name="tooltip-text" translatable="yes">Find using regex.</property>
+                                                <property name="hexpand">True</property>
+                                                <property name="active">True</property>
+                                                <property name="draw-indicator">False</property>
+                                                <property name="group">search_use_text_button</property>
+                                                <style>
+                                                  <class name="flat"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">2</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkRadioButton" id="search_use_text_button">
+                                                <property name="label" translatable="yes">abc</property>
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="receives-default">False</property>
+                                                <property name="tooltip-text" translatable="yes">Find using plain text.</property>
+                                                <property name="hexpand">True</property>
+                                                <property name="draw-indicator">False</property>
+                                                <style>
+                                                  <class name="flat"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">3</property>
+                                              </packing>
+                                            </child>
+                                            <style>
+                                              <class name="linked"/>
+                                            </style>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">1</property>
+                                            <property name="top-attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkButton" id="filter_button">
+                                            <property name="label" translatable="yes">Filter</property>
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="receives-default">True</property>
+                                            <property name="valign">center</property>
+                                            <signal name="clicked" handler="on_filter_button_clicked" swapped="no"/>
                                             <style>
                                               <class name="flat"/>
                                             </style>
                                           </object>
                                           <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">0</property>
+                                            <property name="left-attach">3</property>
+                                            <property name="top-attach">1</property>
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkRadioButton" id="search_use_regex_button">
-                                            <property name="label" translatable="yes">.*</property>
+                                          <object class="GtkSearchEntry" id="response_filter_entry">
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
-                                            <property name="receives-default">False</property>
-                                            <property name="tooltip-text" translatable="yes">Find using regex.</property>
-                                            <property name="draw-indicator">False</property>
-                                            <property name="group">search_use_text_button</property>
-                                            <style>
-                                              <class name="flat"/>
-                                            </style>
+                                            <property name="valign">center</property>
+                                            <property name="max-width-chars">30</property>
+                                            <property name="primary-icon-name">edit-find-symbolic</property>
+                                            <property name="primary-icon-activatable">False</property>
+                                            <property name="primary-icon-sensitive">False</property>
+                                            <signal name="activate" handler="on_response_filter_entry_activate" swapped="no"/>
+                                            <signal name="stop-search" handler="on_response_filter_entry_stop_search" swapped="no"/>
                                           </object>
                                           <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">1</property>
+                                            <property name="left-attach">2</property>
+                                            <property name="top-attach">1</property>
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkRadioButton" id="search_use_text_button">
-                                            <property name="label" translatable="yes">abc</property>
+                                          <object class="GtkBox">
                                             <property name="visible">True</property>
-                                            <property name="can-focus">True</property>
-                                            <property name="receives-default">False</property>
-                                            <property name="tooltip-text" translatable="yes">Find using plain text.</property>
-                                            <property name="active">True</property>
-                                            <property name="draw-indicator">False</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="halign">end</property>
+                                            <property name="valign">center</property>
+                                            <child>
+                                              <object class="GtkRadioButton" id="filter_use_path_filter_button">
+                                                <property name="label" translatable="yes">{..}</property>
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="receives-default">False</property>
+                                                <property name="tooltip-text" translatable="yes">Filter using JSONPath, or XPath.</property>
+                                                <property name="relief">none</property>
+                                                <property name="draw-indicator">False</property>
+                                                <property name="group">filter_use_text_button</property>
+                                                <style>
+                                                  <class name="flat"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkRadioButton" id="filter_use_regex_button">
+                                                <property name="label" translatable="yes">.*</property>
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="receives-default">False</property>
+                                                <property name="tooltip-text" translatable="yes">Filter using regex.</property>
+                                                <property name="relief">none</property>
+                                                <property name="draw-indicator">False</property>
+                                                <property name="group">filter_use_text_button</property>
+                                                <style>
+                                                  <class name="flat"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkRadioButton" id="filter_use_glob_button">
+                                                <property name="label" translatable="yes">ab*</property>
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="receives-default">False</property>
+                                                <property name="tooltip-text" translatable="yes">Filter using glob style pattern matching.</property>
+                                                <property name="relief">none</property>
+                                                <property name="draw-indicator">False</property>
+                                                <property name="group">filter_use_text_button</property>
+                                                <style>
+                                                  <class name="flat"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">2</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkRadioButton" id="filter_use_text_button">
+                                                <property name="label" translatable="yes">abc</property>
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="receives-default">False</property>
+                                                <property name="tooltip-text" translatable="yes">Filter using substring.</property>
+                                                <property name="relief">none</property>
+                                                <property name="active">True</property>
+                                                <property name="draw-indicator">False</property>
+                                                <style>
+                                                  <class name="flat"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">3</property>
+                                              </packing>
+                                            </child>
                                             <style>
-                                              <class name="flat"/>
+                                              <class name="linked"/>
                                             </style>
                                           </object>
                                           <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">2</property>
+                                            <property name="left-attach">1</property>
+                                            <property name="top-attach">1</property>
                                           </packing>
                                         </child>
-                                        <style>
-                                          <class name="linked"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSearchEntry" id="response_filter_search_entry">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="max-width-chars">30</property>
-                                        <property name="primary-icon-name">edit-find-symbolic</property>
-                                        <property name="primary-icon-activatable">False</property>
-                                        <property name="primary-icon-sensitive">False</property>
-                                        <signal name="activate" handler="on_response_filter_search_entry_activate" swapped="no"/>
-                                        <signal name="search-changed" handler="on_response_filter_changed" swapped="no"/>
-                                        <signal name="stop-search" handler="on_response_filter_search_entry_stop_search" swapped="no"/>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="halign">end</property>
+                                            <property name="valign">center</property>
+                                            <property name="margin-end">3</property>
+                                            <property name="label" translatable="yes">Filter:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">0</property>
+                                            <property name="top-attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="halign">end</property>
+                                            <property name="valign">center</property>
+                                            <property name="margin-end">3</property>
+                                            <property name="label" translatable="yes">Search:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">0</property>
+                                            <property name="top-attach">0</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
                                         <property name="position">2</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkButton" id="search_find_previous_button">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="receives-default">True</property>
-                                        <signal name="clicked" handler="on_search_find_previous_button_clicked" swapped="no"/>
-                                        <child>
-                                          <object class="GtkImage">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="icon-name">go-up-symbolic</property>
-                                          </object>
-                                        </child>
-                                        <style>
-                                          <class name="flat"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">3</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkButton" id="search_find_next_button">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="receives-default">True</property>
-                                        <signal name="clicked" handler="on_search_find_next_button_clicked" swapped="no"/>
-                                        <child>
-                                          <object class="GtkImage">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="icon-name">go-down-symbolic</property>
-                                          </object>
-                                        </child>
-                                        <style>
-                                          <class name="flat"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">4</property>
                                       </packing>
                                     </child>
                                   </object>

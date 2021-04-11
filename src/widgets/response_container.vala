@@ -35,7 +35,8 @@ namespace Repose.Widgets {
         //  [GtkChild] private Gtk.Notebook response_notebook;
         [GtkChild] private Gtk.TextView response_headers_text;
         [GtkChild] private Gtk.Revealer response_filter_search_bar;
-        [GtkChild] private Gtk.SearchEntry response_filter_search_entry;
+        [GtkChild] private Gtk.SearchEntry response_filter_entry;
+        [GtkChild] private Gtk.SearchEntry response_search_entry;
         [GtkChild] private Gtk.SourceView response_text;
         [GtkChild] private Gtk.TextView response_text_raw;
         //  [GtkChild] private Gtk.ScrolledWindow response_webview_scroll_window;
@@ -47,8 +48,11 @@ namespace Repose.Widgets {
         //  [GtkChild] private Gtk.Button search_find_next_button;
 
         [GtkChild] private Gtk.ToggleButton search_use_regex_button;
-        [GtkChild] private Gtk.ToggleButton search_use_path_filter_button;
         //  [GtkChild] private Gtk.ToggleButton search_use_text_button;
+        [GtkChild] private Gtk.ToggleButton filter_use_path_filter_button;
+        [GtkChild] private Gtk.ToggleButton filter_use_regex_button;
+        [GtkChild] private Gtk.ToggleButton filter_use_glob_button;
+        //  [GtkChild] private Gtk.ToggleButton filter_use_text_button;
 
         private Gtk.SourceStyleSchemeManager style_manager;
         private Gtk.SourceLanguageManager language_manager;
@@ -231,67 +235,104 @@ namespace Repose.Widgets {
                 var body_text = (string)body.data;
 
                 // Only filter if the filter bar is open and filter is active.
-                if (response_filter_search_bar.child_revealed &&
-                    search_use_path_filter_button.active && 
-                    response_filter_search_entry.text != "") 
-                {
-                    switch (response.content_type) {
-                    case "application/json":
-                        debug("Applying json filter");
-                        try {
-                            var root = Json.from_string(body_text);
-                            var filtered = Json.Path.query(response_filter_search_entry.text, root);
-                            body_text = Json.to_string(filtered, true);
-                        } catch (Error e) {
-                            message("Failed to filter json data: %s", e.message);
+                if (response_filter_search_bar.child_revealed && response_filter_entry.text != "") {
+                    // Path filter.
+
+                    if (filter_use_path_filter_button.active) {
+                        switch (response.content_type) {
+                        case "application/json":
+                            debug("Applying json filter");
+                            try {
+                                var root = Json.from_string(body_text);
+                                var filtered = Json.Path.query(response_filter_entry.text, root);
+                                body_text = Json.to_string(filtered, true);
+                            } catch (Error e) {
+                                message("Failed to filter json data: %s", e.message);
+                            }
+                            break;
+                        case "text/xml":
+                        case "application/xml":
+                        case "text/html":
+                            debug("Using XPath filter.");
+                            Xml.Doc* doc;
+                            Xml.XPath.Object* res;
+                            try {
+                                if (response.content_type == "text/html") {
+                                    doc = Html.Doc.read_doc(body_text, response.request.url, "UTF-8");
+                                } else {
+                                    doc = Xml.Parser.parse_doc(body_text);
+                                }
+                                if (doc == null) {
+                                    message("Failed to parse xml document.");
+                                    break;
+                                }
+
+                                var cntx = new Xml.XPath.Context(doc);
+                                res = cntx.eval_expression(response_filter_entry.text);
+                                if (res == null) {
+                                    message("Failed to parse xml path.");
+                                    break;
+                                }
+
+                                assert(res != null);
+                                assert(res->type == Xml.XPath.ObjectType.NODESET);
+                                assert(res->nodesetval != null);
+
+                                var new_body = new StringBuilder();
+                                for (int i = 0; i < res->nodesetval->length(); i++) {
+                                    var node = res->nodesetval->item(i);
+                                    var buf = new Xml.Buffer();
+                                    buf.node_dump(doc, node, 0, 1);
+                                    new_body.append(buf.content());
+                                    if (res->nodesetval->length() > 1) new_body.append_c('\n');
+                                }
+                                
+                                body_text = new_body.str;
+                            } finally {
+                                delete doc;
+                                delete res;
+                            }
+                            break;
+                        default:
+                            break;
                         }
-                        break;
-                    case "text/xml":
-                    case "application/xml":
-                    case "text/html":
-                        debug("Using XPath filter.");
-                        Xml.Doc* doc;
-                        Xml.XPath.Object* res;
+                    } else if (filter_use_regex_button.active) { // Regex filter.
+                        Regex rex;
                         try {
-                            if (response.content_type == "text/html") {
-                                doc = Html.Doc.read_doc(body_text, response.request.url, "UTF-8");
-                            } else {
-                                doc = Xml.Parser.parse_doc(body_text);
-                            }
-                            if (doc == null) {
-                                message("Failed to parse xml document.");
-                                break;
-                            }
-
-                            var cntx = new Xml.XPath.Context(doc);
-                            res = cntx.eval_expression(response_filter_search_entry.text);
-                            if (res == null) {
-                                message("Failed to parse xml path.");
-                                break;
-                            }
-
-                            assert(res != null);
-                            assert(res->type == Xml.XPath.ObjectType.NODESET);
-                            assert(res->nodesetval != null);
-
-                            var new_body = new StringBuilder();
-                            message("nodelen: %d",res->nodesetval->length());
-                            for (int i = 0; i < res->nodesetval->length(); i++) {
-                                var node = res->nodesetval->item(i);
-                                var buf = new Xml.Buffer();
-                                buf.node_dump(doc, node, 0, 1);
-                                new_body.append(buf.content());
-                                if (res->nodesetval->length() > 1) new_body.append_c('\n');
-                            }
-                            
-                            body_text = new_body.str;
-                        } finally {
-                            delete doc;
-                            delete res;
+                            rex = new Regex(response_filter_entry.text, RegexCompileFlags.CASELESS);
+                        } catch(RegexError e) {
+                            message("Failed to compile filter regex: %s", e.message);
+                            return;
                         }
-                        break;
-                    default:
-                        break;
+
+                        var new_body = new StringBuilder();
+                        foreach (var line in body_text.split("\n")) {
+                            if (rex.match(line)) {
+                                new_body.append(line);
+                                new_body.append_c('\n');
+                            }
+                        }
+                        body_text = new_body.str;
+                    } else if (filter_use_glob_button.active) { // Pattern filter
+                        var pattern = new PatternSpec(response_filter_entry.text.down());
+                        var new_body = new StringBuilder();
+                        foreach (var line in body_text.split("\n")) {
+                            if (pattern.match_string(line.down())) {
+                                new_body.append(line);
+                                new_body.append_c('\n');
+                            }
+                        }
+                        body_text = new_body.str;
+                    } else { // Text filter
+                        var new_body = new StringBuilder();
+                        var txt = response_filter_entry.text.down();
+                        foreach (var line in body_text.split("\n")) {
+                            if (line.down().contains(txt)) {
+                                new_body.append(line);
+                                new_body.append_c('\n');
+                            }
+                        }
+                        body_text = new_body.str;
                     }
                 }
 
@@ -393,13 +434,10 @@ namespace Repose.Widgets {
         }
 
         [GtkCallback]
-        private async void on_response_filter_changed() {
-            response_filter_search_entry.get_style_context().remove_class("error");
+        private async void on_response_search_entry_search_changed() {
+            response_search_entry.get_style_context().remove_class("error");
 
-            // Filter will be applied when enter button is pressed.
-            if (search_use_path_filter_button.active) return;
-
-            var search_text = response_filter_search_entry.text;
+            var search_text = response_search_entry.text;
             if (search_text.length < 3) {
                 if (search_context != null) {
                     search_context.settings.search_text = "";
@@ -408,7 +446,7 @@ namespace Repose.Widgets {
             }
 
             var settings = new Gtk.SourceSearchSettings();
-            settings.search_text = response_filter_search_entry.text;
+            settings.search_text = response_search_entry.text;
             settings.case_sensitive = false;
             settings.regex_enabled = search_use_regex_button.active;
             settings.wrap_around = true;
@@ -417,7 +455,7 @@ namespace Repose.Widgets {
             var rex_err = search_context.get_regex_error();
             if (rex_err != null) {
                 message("Failed to compile search regex: %s", rex_err.message);
-                response_filter_search_entry.get_style_context().add_class("error");
+                response_search_entry.get_style_context().add_class("error");
             }
 
             response_text_buffer.get_start_iter(out search_start_iter);
@@ -484,7 +522,7 @@ namespace Repose.Widgets {
         private void show_filter_bar() {
             response_filter_search_bar.reveal_child = !response_filter_search_bar.reveal_child;
             if (response_filter_search_bar.reveal_child) {
-                response_filter_search_entry.grab_focus();
+                response_search_entry.grab_focus();
             }
         }
 
@@ -494,7 +532,12 @@ namespace Repose.Widgets {
         }
 
         [GtkCallback]
-        private async void on_response_filter_search_entry_stop_search() {
+        private async void on_response_search_entry_stop_search() {
+            yield close_filter_bar();
+        }
+        
+        [GtkCallback]
+        private async void on_response_filter_entry_stop_search() {
             yield close_filter_bar();
         }
 
@@ -503,24 +546,28 @@ namespace Repose.Widgets {
             // Clear search.
             response_filter_search_bar.reveal_child = false;
             search_context = null;
-            if (search_use_path_filter_button.active) {
+            if (filter_use_path_filter_button.active) {
                 // Reload file to clear filter when we close the filter bar.
                 yield load_response_file(root_state.active_request.response);
             }
         }
 
         [GtkCallback]
-        private async void on_response_filter_search_entry_activate() {
+        private async void on_response_filter_entry_activate() {
             debug("Response filter entry activated.");
+            yield load_response_file(root_state.active_request.response);
+        }
 
-            // Filter
-            if (search_use_path_filter_button.active) {
-                yield load_response_file(root_state.active_request.response);
-                return;
-            }
-
-            // Search
+        [GtkCallback]
+        private async void on_response_search_entry_activate() {
+            debug("Response search entry activated.");
             yield find_next_search_match();
+        }
+
+        [GtkCallback]
+        private async void on_filter_button_clicked() {
+            debug("Response filter button clicked.");
+            yield load_response_file(root_state.active_request.response);
         }
 
         [GtkCallback]
