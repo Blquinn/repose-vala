@@ -23,14 +23,15 @@ namespace Repose.Widgets {
 	[GtkTemplate(ui = "/me/blq/Repose/ui/MainWindow.ui")]
     public class MainWindow : Gtk.Window {
 		//  [GtkChild] private unowned Gtk.Paned request_pane;
-		[GtkChild] private unowned Gtk.ListBox request_list;
 		[GtkChild] private unowned Gtk.Box active_requests_notebook_box;
+		[GtkChild] private unowned Gtk.Box request_tree_container;
 		[GtkChild] private unowned Gtk.Notebook active_requests_notebook;
 		[GtkChild] private unowned Gtk.Stack editor_placeholder_stack;
 		[GtkChild] private unowned Gtk.Label no_request_selected_label;
 		[GtkChild] private unowned Gtk.HeaderBar header_bar;
-		//  [GtkChild] private unowned Gtk.Button new_request_button;
-		private Gtk.ToggleButton show_saved_requests_button;
+		[GtkChild] private unowned Gtk.ToggleButton show_saved_requests_button;
+		private Gtk.Button new_request_button;
+		private Widgets.RequestTree request_tree;
 
 		private RequestEditor request_editor;
 		private Models.RootState root_state;
@@ -40,36 +41,25 @@ namespace Repose.Widgets {
 
 			root_state = new Models.RootState();
 
-			var col_1 = new Models.CollectionModel();
-			col_1.name = "Collection 1";
-			var req_1 = new Models.Request("Request 1", "https://example.com", "GET");
-			var req_node_1 = new Models.RequestTreeNode(new Models.FolderModel("Folder 1"), req_1);
-			var req_node_2 = new Models.RequestTreeNode(null, req_1);
-			req_node_1.add_child(req_node_2);
-			col_1.populate_collection({req_node_1});
-			//  col_1.add_child(req_node_1);
-			root_state.collections.append(col_1);
+			request_tree = new Widgets.RequestTree();
+			request_tree_container.pack_start(request_tree, true, true);
 
-			request_list.bind_model(root_state.collections, (collection) => {
-				return new Collection((Models.CollectionModel) collection);
-			});
+			try {
+				var icon = new Gdk.Pixbuf.from_resource("/me/blq/Repose/resources/img/nightcap-round-grey-100x100.png");
+				set_icon(icon);
+			} catch (Error e) {
+				warning("Failed to load application icon: %s", e.message);
+			}
 
-			//  try {
-			//  	var icon = new Gdk.Pixbuf.from_resource("/me/blq/Repose/resources/img/nightcap-round-grey-100x100.png");
-			//  	set_icon(icon);
-			//  } catch (Error e) {
-			//  	warning("Failed to load application icon: %s", e.message);
-			//  }
-
-			show_saved_requests_button = new Gtk.ToggleButton();
-			show_saved_requests_button.visible = true;
-			show_saved_requests_button.tooltip_text = "Show or hide the left side-bar.";
-			var srbi = new Gtk.Image.from_icon_name("view-dual-symbolic", Gtk.IconSize.BUTTON);
-			srbi.visible = true;
-			show_saved_requests_button.child = srbi;
-			header_bar.pack_end(show_saved_requests_button);
-
-			root_state.bind_property("is_request_list_open", request_list, "visible");
+			new_request_button = new Gtk.Button();
+			var nrbi = new Gtk.Image.from_icon_name("list-add-symbolic", Gtk.IconSize.BUTTON);
+			new_request_button.child = nrbi;
+			new_request_button.tooltip_text = "Add new request.";
+			new_request_button.show_all();
+			header_bar.pack_end(new_request_button);
+			new_request_button.clicked.connect(on_new_request_button_clicked);
+			
+			root_state.bind_property("is_request_list_open", request_tree_container, "visible");
 			show_saved_requests_button.bind_property("active", root_state, "is_request_list_open");
 
 			request_editor = new RequestEditor(root_state);
@@ -81,7 +71,6 @@ namespace Repose.Widgets {
 			active_requests_notebook.switch_page.connect(on_requests_notebook_page_changed);
 		}
 
-		[GtkCallback]
 		private void on_new_request_button_clicked(Gtk.Button btn) {
 			root_state.add_new_request();
 		}

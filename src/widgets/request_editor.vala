@@ -156,6 +156,11 @@ namespace Repose.Widgets {
             yield send_request();
         }
 
+        [GtkCallback]
+        private async void on_url_entry_activate() {
+            yield send_request();
+        }
+
         public async void send_request() {
             var request = root_state.active_request;
 

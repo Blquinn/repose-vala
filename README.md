@@ -21,6 +21,7 @@ It is heavily influenced by both Postman and Insomnia, but aims to be much light
 ## TODO (Ideas and PRs are welcome)
 
 - [ ] Pretty print xml + html
+- [ ] Expose http client and request configuration.
 - [ ] Make response filter pane part of request state.
 - [ ] Persistence
 - [ ] Collections and folders

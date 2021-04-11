@@ -9,6 +9,7 @@
     <file>ui/ParamTable.ui</file>
     <file>ui/RequestEditor.ui</file>
     <file>ui/ResponseContainer.ui</file>
+    <file>ui/RequestTree.ui</file>
 
     <file>ui/style.css</file>
 

@@ -64,6 +64,7 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="placeholder-text" translatable="yes">Url</property>
+            <signal name="activate" handler="on_url_entry_activate" swapped="no"/>
           </object>
           <packing>
             <property name="expand">True</property>

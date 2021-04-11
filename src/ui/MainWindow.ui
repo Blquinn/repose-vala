@@ -11,9 +11,13 @@
         <property name="visible">True</property>
         <property name="can-focus">True</property>
         <child>
-          <object class="GtkListBox" id="request_list">
+          <object class="GtkBox" id="request_tree_container">
             <property name="width-request">200</property>
             <property name="can-focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <placeholder/>
+            </child>
           </object>
           <packing>
             <property name="resize">False</property>
@@ -86,18 +90,16 @@ Select a request in the left hand panel, or create a new request with the button
         <property name="title" translatable="yes">Repose</property>
         <property name="show-close-button">True</property>
         <child>
-          <object class="GtkButton" id="new_request_button">
+          <object class="GtkToggleButton" id="show_saved_requests_button">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="tooltip-text" translatable="yes">Create new request.</property>
-            <property name="always-show-image">True</property>
-            <signal name="clicked" handler="on_new_request_button_clicked" swapped="no"/>
+            <property name="tooltip-text" translatable="yes">Show or hide the left side-bar.</property>
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="icon-name">list-add-symbolic</property>
+                <property name="icon-name">view-dual-symbolic</property>
               </object>
             </child>
           </object>
@@ -105,4 +107,10 @@ Select a request in the left hand panel, or create a new request with the button
       </object>
     </child>
   </template>
+  <object class="GtkTreeStore" id="request_list_store">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
 </interface>
