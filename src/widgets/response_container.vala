@@ -571,6 +571,14 @@ namespace Repose.Widgets {
         }
 
         [GtkCallback]
+        private async void on_response_filter_entry_search_changed() {
+            // When the filter is cleared, re-load the response body.
+            if (response_filter_entry.text == "") {
+                yield load_response_file(root_state.active_request.response);
+            }
+        }
+
+        [GtkCallback]
         private bool on_response_text_key_press_event(Gdk.EventKey key) {
             show_filter_bar();
             return true;
