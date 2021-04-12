@@ -22,7 +22,7 @@ namespace Repose.Widgets {
 	[GtkTemplate(ui = "/me/blq/Repose/ui/RequestTree.ui")]
     public class RequestTree : Gtk.ScrolledWindow {
 		//  [GtkChild] private Gtk.TreeView request_list;
-		[GtkChild] private Gtk.TreeStore request_list_store;
+		[GtkChild] private unowned Gtk.TreeStore request_list_store;
 
         public RequestTree() {
 			Gtk.TreeIter iter;
