@@ -20,6 +20,9 @@ namespace Repose.Models {
     public class Response : Object {
         public const string BINARY_BODY = "__BINARY__";
 
+        public enum SearchMode { TEXT, REGEX }
+        public enum FilterMode { TEXT, REGEX, GLOB, PATH }
+
         public signal void response_received();
 
         public uint status_code { get; set; default = 0; }
@@ -30,6 +33,13 @@ namespace Repose.Models {
         public string error_text { get; set; }
         public string response_file_path { get; set; default = ""; }
         public int64 body_length { get; set; default = -1; }
+
+        public bool filter_expanded { get; set; default = false; }
+        public string search_text { get; set; default = ""; }
+        public string filter_text { get; set; default = ""; }
+        public SearchMode search_mode { get; set; default = SearchMode.TEXT; }
+        public FilterMode filter_mode { get; set; default = FilterMode.TEXT; }
+
         public weak Request request { get; set; }
 
         public Response(Request req) {

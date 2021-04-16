@@ -48,11 +48,11 @@ namespace Repose.Widgets {
         //  [GtkChild] private unowned Gtk.Button search_find_next_button;
 
         [GtkChild] private unowned Gtk.ToggleButton search_use_regex_button;
-        //  [GtkChild] private unowned Gtk.ToggleButton search_use_text_button;
+        [GtkChild] private unowned Gtk.ToggleButton search_use_text_button;
         [GtkChild] private unowned Gtk.ToggleButton filter_use_path_filter_button;
         [GtkChild] private unowned Gtk.ToggleButton filter_use_regex_button;
         [GtkChild] private unowned Gtk.ToggleButton filter_use_glob_button;
-        //  [GtkChild] private unowned Gtk.ToggleButton filter_use_text_button;
+        [GtkChild] private unowned Gtk.ToggleButton filter_use_text_button;
 
         private Gtk.SourceStyleSchemeManager style_manager;
         private Gtk.SourceLanguageManager language_manager;
@@ -70,6 +70,10 @@ namespace Repose.Widgets {
         private Binding status_code_binding;
         private Binding body_length_binding;
         private Binding response_time_binding;
+
+        private Binding response_filter_expand_binding;
+        private Binding filter_text_binding;
+        private Binding search_text_binding;
 
         // TODO: Fix response_received handler getting called twice and
         // remove this hack.
@@ -109,6 +113,9 @@ namespace Repose.Widgets {
             if (status_code_binding != null) status_code_binding.unbind();
             if (body_length_binding != null) body_length_binding.unbind();
             if (response_time_binding != null) response_time_binding.unbind();
+            if (response_filter_expand_binding != null) response_filter_expand_binding.unbind();
+            if (filter_text_binding != null) filter_text_binding.unbind();
+            if (search_text_binding != null) search_text_binding.unbind();
 
             var response = root_state.active_request.response;
             loading_spinner_binding = response.request.bind_property("request_running", response_loading_spinner, "active");
@@ -131,9 +138,53 @@ namespace Repose.Widgets {
                     to.set_string(format_response_time((TimeSpan)from.get_int64()));
                     return true;
                 });
+            response_filter_expand_binding = response.bind_property("filter_expanded", response_filter_search_bar, "reveal_child", BindingFlags.BIDIRECTIONAL);
+            // TODO: Filter text writing into search text?
+            filter_text_binding = response.bind_property("search_text", response_search_entry, "text", BindingFlags.BIDIRECTIONAL);
+            search_text_binding = response.bind_property("filter_text", response_filter_entry, "text", BindingFlags.BIDIRECTIONAL);
+            response.notify.connect((param) => {
+                if (param.name == "search_mode")
+                    update_search_button();
+                else if (param.name == "filter_mode")
+                    update_filter_button();
+            });
+
+            update_search_button();
+            update_filter_button();
+            response_search_entry.set_text(response.search_text);
+            response_filter_entry.set_text(response.filter_text);
             response_status_label.set_text(format_status_code(response.status_code));
             response_size_label.set_text(format_body_length(response.body_length));
             response_time_label.set_text(format_response_time(response.response_time));
+            response_filter_search_bar.reveal_child = response.filter_expanded;
+        }
+
+        private void update_search_button() {
+            switch (root_state.active_request.response.search_mode) {
+            case Models.Response.SearchMode.REGEX:
+                search_use_regex_button.active = true;
+                break;
+            case Models.Response.SearchMode.TEXT:
+                search_use_text_button.active = true;
+                break;
+            }
+        }
+        
+        private void update_filter_button() {
+            switch (root_state.active_request.response.filter_mode) {
+            case Models.Response.FilterMode.TEXT:
+                filter_use_text_button.active = true;
+                break;
+            case Models.Response.FilterMode.REGEX:
+                filter_use_regex_button.active = true;
+                break;
+            case Models.Response.FilterMode.GLOB:
+                filter_use_glob_button.active = true;
+                break;
+            case Models.Response.FilterMode.PATH:
+                filter_use_path_filter_button.active = true;
+                break;
+            }
         }
 
         private string format_status_code(uint status_code) {
@@ -437,7 +488,7 @@ namespace Repose.Widgets {
         private async void on_response_search_entry_search_changed() {
             response_search_entry.get_style_context().remove_class("error");
 
-            var search_text = response_search_entry.text;
+            var search_text = root_state.active_request.response.search_text;
             if (search_text.length < 3) {
                 if (search_context != null) {
                     search_context.settings.search_text = "";
@@ -446,7 +497,7 @@ namespace Repose.Widgets {
             }
 
             var settings = new Gtk.SourceSearchSettings();
-            settings.search_text = response_search_entry.text;
+            settings.search_text = search_text;
             settings.case_sensitive = false;
             settings.regex_enabled = search_use_regex_button.active;
             settings.wrap_around = true;
@@ -573,7 +624,8 @@ namespace Repose.Widgets {
         [GtkCallback]
         private async void on_response_filter_entry_search_changed() {
             // When the filter is cleared, re-load the response body.
-            if (response_filter_entry.text == "") {
+            var filter_text = root_state.active_request.response.filter_text;
+            if (filter_text == "") {
                 yield load_response_file(root_state.active_request.response);
             }
         }
@@ -592,6 +644,32 @@ namespace Repose.Widgets {
             var response = root_state.active_request.response;
 
             response.request.cancel();
+        }
+
+        [GtkCallback]
+        private void on_search_button_toggled() {
+            debug("Search button toggled.");
+            var res = root_state.active_request.response;
+            if (search_use_regex_button.active) {
+                res.search_mode = Models.Response.SearchMode.REGEX;
+            } else {
+                res.search_mode = Models.Response.SearchMode.TEXT;
+            }
+        }
+
+        [GtkCallback]
+        private void on_filter_button_toggled() {
+            debug("Filter button toggled.");
+            var res = root_state.active_request.response;
+            if (filter_use_regex_button.active) {
+                res.filter_mode = Models.Response.FilterMode.REGEX;
+            } else if (filter_use_path_filter_button.active) {
+                res.filter_mode = Models.Response.FilterMode.PATH;
+            } else if (filter_use_glob_button.active) {
+                res.filter_mode = Models.Response.FilterMode.GLOB;
+            } else { // Text filter
+                res.filter_mode = Models.Response.FilterMode.TEXT;
+            }
         }
     }
 }

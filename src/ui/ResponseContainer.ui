@@ -261,6 +261,7 @@
                                                 <property name="active">True</property>
                                                 <property name="draw-indicator">False</property>
                                                 <property name="group">search_use_text_button</property>
+                                                <signal name="toggled" handler="on_search_button_toggled" swapped="no"/>
                                                 <style>
                                                   <class name="flat"/>
                                                 </style>
@@ -280,6 +281,7 @@
                                                 <property name="tooltip-text" translatable="yes">Find using plain text.</property>
                                                 <property name="hexpand">True</property>
                                                 <property name="draw-indicator">False</property>
+                                                <signal name="toggled" handler="on_search_button_toggled" swapped="no"/>
                                                 <style>
                                                   <class name="flat"/>
                                                 </style>
@@ -350,6 +352,7 @@
                                                 <property name="relief">none</property>
                                                 <property name="draw-indicator">False</property>
                                                 <property name="group">filter_use_text_button</property>
+                                                <signal name="toggled" handler="on_filter_button_toggled" swapped="no"/>
                                                 <style>
                                                   <class name="flat"/>
                                                 </style>
@@ -370,6 +373,7 @@
                                                 <property name="relief">none</property>
                                                 <property name="draw-indicator">False</property>
                                                 <property name="group">filter_use_text_button</property>
+                                                <signal name="toggled" handler="on_filter_button_toggled" swapped="no"/>
                                                 <style>
                                                   <class name="flat"/>
                                                 </style>
@@ -390,6 +394,7 @@
                                                 <property name="relief">none</property>
                                                 <property name="draw-indicator">False</property>
                                                 <property name="group">filter_use_text_button</property>
+                                                <signal name="toggled" handler="on_filter_button_toggled" swapped="no"/>
                                                 <style>
                                                   <class name="flat"/>
                                                 </style>
@@ -410,6 +415,7 @@
                                                 <property name="relief">none</property>
                                                 <property name="active">True</property>
                                                 <property name="draw-indicator">False</property>
+                                                <signal name="toggled" handler="on_filter_button_toggled" swapped="no"/>
                                                 <style>
                                                   <class name="flat"/>
                                                 </style>

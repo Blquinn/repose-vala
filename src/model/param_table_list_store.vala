@@ -81,13 +81,15 @@ namespace Repose.Models {
 
             bool first = true;
             do {
-                if (!first) b.append_c('&');
-                first = false;
-
                 Value key;
                 get_value(iter, Column.KEY, out key);
                 Value value;
                 get_value(iter, Column.VALUE, out value);
+
+                if (key.get_string() == "" && value.get_string() == "") continue;
+
+                if (!first) b.append_c('&');
+                first = false;
 
                 b.append(Soup.URI.encode(key.get_string(), null));
                 b.append_c('=');
