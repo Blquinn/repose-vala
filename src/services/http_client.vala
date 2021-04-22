@@ -36,10 +36,26 @@ namespace Repose.Services {
             res.body_length = 0;
             res.headers.remove_range(0, res.headers.length);
 
-            var start = new DateTime.now_local();
+            FileIOStream tmp_file;
+            File file;
+            try {
+                file = File.new_tmp("repose-response-XXXXXX", out tmp_file);
+            } catch (Error e) {
+                var err_msg = "Failed to open tmp response file: %s".printf(e.message);
+                warning(err_msg);
+                res.error_text = err_msg;
+                return;
+            }
+            
+            res.response_file_path = file.get_path();
+
+            message("Downloading response to: %s", res.response_file_path);
+
 
             var cancel = new Cancellable();
             req.cancellable = cancel;
+
+            var start = new DateTime.now_local();
 
             try {
                 var sess = new Soup.Session();
@@ -109,11 +125,11 @@ namespace Repose.Services {
 
                 string? text_encoding = null;
 
-                if (ContentType.is_a(ct, "octet-stream")) {
+                if (ct != null && ContentType.is_a(ct, "octet-stream")) {
                     text_encoding = Models.Response.BINARY_BODY;
                 }
 
-                if (text_encoding == null){
+                if (text_encoding == null && content_type_params != null) {
                     var cs = content_type_params.get("charset");
                     if (cs != null && cs != "") {
                         cs = cs.up();
@@ -121,21 +137,6 @@ namespace Repose.Services {
                         text_encoding = cs;
                     }
                 }
-
-                FileIOStream tmp_file;
-                File file;
-                try {
-                    file = File.new_tmp("repose-response-XXXXXX", out tmp_file);
-                } catch (Error e) {
-                    var err_msg = "Failed to open tmp response file: %s".printf(e.message);
-                    warning(err_msg);
-                    res.error_text = err_msg;
-                    return;
-                }
-                
-                res.response_file_path = file.get_path();
-
-                message("Downloading response to: %s", res.response_file_path);
 
                 var charset_detector = new UcharDet.Classifier();
 
@@ -196,7 +197,7 @@ namespace Repose.Services {
                     res.text_encoding = Models.Response.BINARY_BODY;
                     return;
                 }
-                if (charset_detector != null) {
+                if (charset_detector != null && res.body_length > 0) {
                     charset_detector.data_end();
                     var cdt = charset_detector.get_charset();
 

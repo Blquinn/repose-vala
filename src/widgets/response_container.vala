@@ -249,7 +249,8 @@ namespace Repose.Widgets {
                     file_size = info.get_size();
 
                     input_stream = yield file.read_async();
-                    if (!(response.text_encoding == "UTF-8" || response.text_encoding == "ASCII")) {
+                    if (response.text_encoding != null && 
+                        !(response.text_encoding == "UTF-8" || response.text_encoding == "ASCII")) {
                         message("Converting response text to UTF-8 from %s", response.text_encoding);
                         var converter = new CharsetConverter("UTF-8", response.text_encoding);
                         input_stream = new ConverterInputStream(yield file.read_async(), converter);

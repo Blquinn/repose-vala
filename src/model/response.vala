@@ -28,7 +28,7 @@ namespace Repose.Models {
         public uint status_code { get; set; default = 0; }
         public TimeSpan response_time { get; set; default = -1; }
         public string content_type { get; set; }
-        public string text_encoding { get; set; }
+        public string? text_encoding { get; set; }
         public Array<ParamRow> headers { get; set; default = new Array<ParamRow>(); }
         public string error_text { get; set; }
         public string response_file_path { get; set; default = ""; }

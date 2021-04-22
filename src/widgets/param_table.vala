@@ -83,6 +83,23 @@ namespace Repose.Widgets {
         //      selection.select_iter(iter);
         //  }
 
+        private void add_row_if_last_not_empty() {
+            Gtk.TreeIter it;
+            store.get_iter_first(out it);
+            var children = store.iter_n_children(null);
+            store.iter_nth_child(out it, null, children-1);
+
+            // If the last row is not empty, we need to add an additional empty row.
+
+            Value val;
+            store.get_value(it, Column.KEY, out val);
+            if (val.get_string() != "") return;
+            store.get_value(it, Column.VALUE, out val);
+            if (val.get_string() != "") return;
+
+            add_row();
+        }
+
         private void add_row() {
             Gtk.TreeIter it;
             store.append(out it);
