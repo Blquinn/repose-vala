@@ -48,14 +48,7 @@ namespace Repose.Widgets {
             store.get_iter_from_string(out iter, path);
             store.set_value(iter, Column.KEY, text);
 
-            if (text != "") return;
-
-            if (store.iter_n_children(iter) > 0) { // Remove the row
-                store.remove(ref iter);
-            } else { // Add a new row at the end of the table.
-                store.insert(out iter, -1);
-                store.set_valuesv(iter, {0, 1, 2}, {"", "", ""});
-            }
+            on_row_edited(iter);
         }
 
         [GtkCallback]
@@ -63,6 +56,8 @@ namespace Repose.Widgets {
             Gtk.TreeIter iter;
             store.get_iter_from_string(out iter, path);
             store.set_value(iter, Column.VALUE, text);
+
+            on_row_edited(iter);
         }
 
         [GtkCallback]
@@ -70,40 +65,53 @@ namespace Repose.Widgets {
             Gtk.TreeIter iter;
             store.get_iter_from_string(out iter, path);
             store.set_value(iter, Column.DESCRIPTION, text);
+
+            on_row_edited(iter);
         }
 
-        //  [GtkCallback]
-        //  private void on_key_released(uint keyval, uint keycode, Gdk.ModifierType state) {
-        //      if (keyval != Gdk.Key.Tab) return;
+        private void on_row_edited(Gtk.TreeIter iter) {
+            Value key;
+            store.get_value(iter, Column.KEY, out key);
+            Value val;
+            store.get_value(iter, Column.VALUE, out val);
 
-        //      var selection = get_selection();
-        //      Gtk.TreeIter iter;
-        //      selection.get_selected(null, out iter);
-        //      //  model.iter_next(ref iter);
-        //      selection.select_iter(iter);
-        //  }
+            // Row is empty
+
+            if (key.get_string() == "" && val.get_string() == "") {
+                store.remove(ref iter);
+            }
+
+            add_row_if_last_not_empty();
+        }
 
         private void add_row_if_last_not_empty() {
             Gtk.TreeIter it;
             store.get_iter_first(out it);
             var children = store.iter_n_children(null);
-            store.iter_nth_child(out it, null, children-1);
 
             // If the last row is not empty, we need to add an additional empty row.
 
-            Value val;
-            store.get_value(it, Column.KEY, out val);
-            if (val.get_string() != "") return;
-            store.get_value(it, Column.VALUE, out val);
-            if (val.get_string() != "") return;
-
-            add_row();
+            if (!is_row_empty(children-1)) {
+                add_row();
+            }
         }
 
         private void add_row() {
             Gtk.TreeIter it;
             store.append(out it);
             store.set(it, Column.KEY, "", Column.VALUE, "", Column.DESCRIPTION, "");
+        }
+
+        private bool is_row_empty(int i) {
+            Gtk.TreeIter it;
+            store.get_iter_first(out it);
+            store.iter_nth_child(out it, null, i);
+            Value val;
+            store.get_value(it, Column.KEY, out val);
+            if (val.get_string() != "") return false;
+            store.get_value(it, Column.VALUE, out val);
+            if (val.get_string() != "") return false;
+            return true;
         }
     }
 }
