@@ -80,16 +80,48 @@
         <property name="vexpand">True</property>
         <signal name="switch-page" handler="on_request_attributes_notebook_switch_page" swapped="no"/>
         <child>
-          <placeholder/>
+          <object class="GtkScrolledWindow" id="param_table_scroll">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="shadow-type">in</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
         </child>
         <child type="tab">
-          <placeholder/>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Params</property>
+          </object>
+          <packing>
+            <property name="tab-fill">False</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkScrolledWindow" id="header_table_scroll">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="shadow-type">in</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
         </child>
         <child type="tab">
-          <placeholder/>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Headers</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+            <property name="tab-fill">False</property>
+          </packing>
         </child>
         <child>
           <object class="GtkNotebook" id="request_type_notebook">
@@ -184,6 +216,54 @@
               </packing>
             </child>
             <child>
+              <object class="GtkScrolledWindow" id="form_data_scroll">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="shadow-type">in</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Form Data</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+                <property name="tab-fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="form_url_encoded_scroll">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="shadow-type">in</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Form Url-Encoded</property>
+              </object>
+              <packing>
+                <property name="position">3</property>
+                <property name="tab-fill">False</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -231,7 +311,7 @@
                 </child>
               </object>
               <packing>
-                <property name="position">2</property>
+                <property name="position">4</property>
               </packing>
             </child>
             <child type="tab">
@@ -241,7 +321,7 @@
                 <property name="label" translatable="yes">Binary</property>
               </object>
               <packing>
-                <property name="position">2</property>
+                <property name="position">4</property>
                 <property name="tab-fill">False</property>
               </packing>
             </child>

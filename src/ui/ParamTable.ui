@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.36.0 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.22"/>
   <template class="ReposeWidgetsParamTable" parent="GtkTreeView">
     <property name="visible">True</property>
-    <property name="can_focus">True</property>
-    <property name="enable_grid_lines">both</property>
+    <property name="can-focus">True</property>
+    <property name="hover-expand">True</property>
+    <property name="enable-grid-lines">both</property>
+    <property name="activate-on-single-click">True</property>
     <child internal-child="selection">
       <object class="GtkTreeSelection"/>
     </child>
     <child>
       <object class="GtkTreeViewColumn" id="key_column">
         <property name="resizable">True</property>
-        <property name="min_width">100</property>
+        <property name="sizing">fixed</property>
+        <property name="min-width">100</property>
         <property name="title" translatable="yes">Key</property>
         <child>
           <object class="GtkCellRendererText" id="key_column_renderer">
@@ -28,7 +31,8 @@
     <child>
       <object class="GtkTreeViewColumn" id="value_column">
         <property name="resizable">True</property>
-        <property name="min_width">100</property>
+        <property name="sizing">fixed</property>
+        <property name="min-width">100</property>
         <property name="title" translatable="yes">Value</property>
         <child>
           <object class="GtkCellRendererText" id="value_column_renderer">
@@ -44,7 +48,8 @@
     <child>
       <object class="GtkTreeViewColumn" id="description_column">
         <property name="resizable">True</property>
-        <property name="min_width">100</property>
+        <property name="sizing">fixed</property>
+        <property name="min-width">100</property>
         <property name="title" translatable="yes">Description</property>
         <child>
           <object class="GtkCellRendererText" id="description_column_renderer">
@@ -58,4 +63,9 @@
       </object>
     </child>
   </template>
+  <object class="GtkAdjustment" id="adjustment1">
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
 </interface>

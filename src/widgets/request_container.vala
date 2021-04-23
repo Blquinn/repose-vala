@@ -27,6 +27,10 @@ namespace Repose.Widgets {
         [GtkChild] private unowned Gtk.Popover request_type_popover;
         [GtkChild] private unowned Gtk.TreeView request_type_popover_tree_view;
         [GtkChild] private unowned Gtk.SourceView request_text;
+        [GtkChild] private unowned Gtk.ScrolledWindow param_table_scroll;
+        [GtkChild] private unowned Gtk.ScrolledWindow header_table_scroll;
+        [GtkChild] private unowned Gtk.ScrolledWindow form_data_scroll;
+        [GtkChild] private unowned Gtk.ScrolledWindow form_url_encoded_scroll;
         //  private Gtk.SourceBuffer request_text_buffer;
 
         private ParamTable param_table;
@@ -45,16 +49,14 @@ namespace Repose.Widgets {
             this.root_state = root_state;
 
             param_table = new ParamTable();
+            param_table_scroll.child = param_table;
             header_table = new ParamTable();
-            request_attributes_notebook.prepend_page(header_table, new Gtk.Label("Headers"));
-            request_attributes_notebook.prepend_page(param_table, new Gtk.Label("Params"));
-            //  request_attributes_notebook.set_current_page(0);
+            header_table_scroll.child = header_table;
 
             request_form_data = new ParamTable();
+            form_data_scroll.child = request_form_data;
             request_form_urlencoded = new ParamTable();
-
-            request_type_notebook.insert_page(request_form_data, new Gtk.Label("Form Data"), 2);
-            request_type_notebook.insert_page(request_form_urlencoded, new Gtk.Label("Form Url-Encoded"), 3);
+            form_url_encoded_scroll.child = request_form_urlencoded;
 
             request_type_popover.position = Gtk.PositionType.TOP;
 
