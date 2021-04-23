@@ -22,15 +22,14 @@ It is heavily influenced by both Postman and Insomnia, but aims to be much light
 
 - [ ] Pretty print xml + html
 - [ ] Expose http client and request configuration.
-- [ ] Make response filter pane part of request state.
+- [x] Make response filter pane part of request state.
 - [ ] Persistence
 - [ ] Collections and folders
-- [ ] Workspaces
 - [ ] Websockets
 - [ ] Styling
 - [ ] Scripting (Templates, variables, scripting)
 - [ ] CSS selector based filtering for HTML
 - [ ] Write tests
-- [ ] Remove any deps that aren't available through linux PMs
+- [x] Remove any deps that aren't available through linux PMs
 - [ ] WebKit based previewing for html responses
 - [ ] Upgrade to libsoup3 (for http2 support) when it becomes available.

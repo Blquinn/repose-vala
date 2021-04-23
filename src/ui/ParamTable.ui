@@ -5,9 +5,11 @@
   <template class="ReposeWidgetsParamTable" parent="GtkTreeView">
     <property name="visible">True</property>
     <property name="can-focus">True</property>
+    <property name="reorderable">True</property>
     <property name="hover-expand">True</property>
     <property name="enable-grid-lines">both</property>
     <property name="activate-on-single-click">True</property>
+    <signal name="key-press-event" handler="on_key_press_event" swapped="no"/>
     <child internal-child="selection">
       <object class="GtkTreeSelection"/>
     </child>
@@ -21,6 +23,8 @@
           <object class="GtkCellRendererText" id="key_column_renderer">
             <property name="editable">True</property>
             <signal name="edited" handler="on_key_column_renderer_edited" swapped="no"/>
+            <signal name="editing-canceled" handler="on_renderer_editing_cancelled" swapped="no"/>
+            <signal name="editing-started" handler="on_renderer_editing_started" swapped="no"/>
           </object>
           <attributes>
             <attribute name="text">0</attribute>
@@ -38,6 +42,8 @@
           <object class="GtkCellRendererText" id="value_column_renderer">
             <property name="editable">True</property>
             <signal name="edited" handler="on_value_column_renderer_edited" swapped="no"/>
+            <signal name="editing-canceled" handler="on_renderer_editing_cancelled" swapped="no"/>
+            <signal name="editing-started" handler="on_renderer_editing_started" swapped="no"/>
           </object>
           <attributes>
             <attribute name="text">1</attribute>
@@ -55,6 +61,8 @@
           <object class="GtkCellRendererText" id="description_column_renderer">
             <property name="editable">True</property>
             <signal name="edited" handler="on_description_column_renderer_edited" swapped="no"/>
+            <signal name="editing-canceled" handler="on_renderer_editing_cancelled" swapped="no"/>
+            <signal name="editing-started" handler="on_renderer_editing_started" swapped="no"/>
           </object>
           <attributes>
             <attribute name="text">2</attribute>
@@ -63,9 +71,4 @@
       </object>
     </child>
   </template>
-  <object class="GtkAdjustment" id="adjustment1">
-    <property name="upper">100</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
 </interface>
