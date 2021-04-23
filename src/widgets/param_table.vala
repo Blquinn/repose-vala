@@ -77,6 +77,7 @@ namespace Repose.Widgets {
             if (key.keyval != Gdk.Key.Tab) return false;
 
             // On tab, select next cell.
+
             Gtk.TreePath? path;
             Gtk.TreeViewColumn? col;
             get_cursor(out path, out col);

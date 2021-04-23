@@ -20,6 +20,7 @@
         <property name="model">request_list_store</property>
         <property name="headers-visible">False</property>
         <property name="search-column">0</property>
+        <signal name="button-press-event" handler="on_request_list_button_press_event" swapped="no"/>
         <child internal-child="selection">
           <object class="GtkTreeSelection"/>
         </child>

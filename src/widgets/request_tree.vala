@@ -21,10 +21,13 @@ namespace Repose.Widgets {
 
 	[GtkTemplate(ui = "/me/blq/Repose/ui/RequestTree.ui")]
     public class RequestTree : Gtk.ScrolledWindow {
-		//  [GtkChild] private Gtk.TreeView request_list;
+		[GtkChild] private unowned Gtk.TreeView request_list;
 		[GtkChild] private unowned Gtk.TreeStore request_list_store;
 
         public RequestTree() {
+			//  request_list_store
+			// Populate with test data.
+
 			Gtk.TreeIter iter;
 			request_list_store.append(out iter, null);
 			request_list_store.set(iter, 0, "Collection 1");
@@ -41,5 +44,24 @@ namespace Repose.Widgets {
 				request_list_store.set(child_iter_n, 0, "Request %d".printf(i));
 			}
         }
+
+		[GtkCallback]
+		private bool on_request_list_button_press_event(Gtk.Widget widget, Gdk.EventButton event) {
+			// On double left click, expand row
+			if (event.type != Gdk.EventType.2BUTTON_PRESS) return false;
+			if (event.button != Gdk.BUTTON_PRIMARY) return false;
+
+			Gtk.TreeIter iter;
+			request_list.get_selection().get_selected(null, out iter);	
+			var path = request_list_store.get_path(iter);
+			if (path == null) return true;
+			var expanded = request_list.is_row_expanded(path);
+			if (expanded) {
+				request_list.collapse_row(path);
+			} else {
+				request_list.expand_row(path, false);
+			}
+			return true;
+		}
     }
 }
