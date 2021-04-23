@@ -36,10 +36,14 @@ namespace Repose.Services {
             res.body_length = 0;
             res.headers.remove_range(0, res.headers.length);
 
+            var cancel = new Cancellable();
+            req.cancellable = cancel;
+
             FileIOStream tmp_file;
             File file;
             try {
-                file = File.new_tmp("repose-response-XXXXXX", out tmp_file);
+                file = File.new_for_path(Utils.Dirs.gen_rand_tmp_path());
+                tmp_file = yield file.create_readwrite_async(FileCreateFlags.PRIVATE, Priority.HIGH, cancel);
             } catch (Error e) {
                 var err_msg = "Failed to open tmp response file: %s".printf(e.message);
                 warning(err_msg);
@@ -50,10 +54,6 @@ namespace Repose.Services {
             res.response_file_path = file.get_path();
 
             message("Downloading response to: %s", res.response_file_path);
-
-
-            var cancel = new Cancellable();
-            req.cancellable = cancel;
 
             var start = new DateTime.now_local();
 

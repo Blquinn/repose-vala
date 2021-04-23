@@ -16,12 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Repose;
+
 int main (string[] args) {
 	message("Starting Repose application.");
 	var app = new Gtk.Application("me.blq.Repose", ApplicationFlags.FLAGS_NONE);
 
 	typeof(Gtk.SourceView).ensure();
-	{ new Repose.Utils.EditorLangs(); }
+	{  // Initialize static vars
+		new Utils.EditorLangs(); 
+		new Utils.Dirs(); 
+	}
+
+	create_tmp_dirs();
 
 	app.activate.connect(() => {
 
@@ -30,7 +37,7 @@ int main (string[] args) {
 		var win = app.active_window;
 		if (win == null) {
 			message("Creating application window.");
-			win = new Repose.Widgets.MainWindow(app);
+			win = new Widgets.MainWindow(app);
 		}
 		win.present();
 	});
@@ -48,4 +55,10 @@ void load_css() {
 		screen,
 		css_provider,
 		Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+}
+
+void create_tmp_dirs() {
+	try {
+		File.new_for_path(Utils.Dirs.tmp).make_directory_with_parents();
+	} catch (Error e) {}
 }

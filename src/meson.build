@@ -20,6 +20,7 @@ repose_sources = [
   'utils/humanize.vala',
   'utils/hex_dump.vala',
   'utils/editor_langs.vala',
+  'utils/dirs.vala',
 ]
 
 vapi_dir = meson.current_source_dir() / 'vapi'
