@@ -82,6 +82,8 @@ namespace Repose.Widgets {
             get_cursor(out path, out col);
             if (path == null || col == null) return false;
 
+            if (current_editable == null) return true;
+
             var len = store.iter_n_children(null);
             var columns = get_columns();
             var row_idx = path.get_indices()[0];
