@@ -10,24 +10,24 @@ namespace Repose.Models {
         }
         public bool expanded { get; set; default = false; }
 
-        public void populate_collection(RequestTreeNode[] nodes) {
-            //  Gtk.TreeIter iter;
-            //  children.get_iter_first(out iter);
-            foreach (var node in nodes) {
-                add_child(null, node);
-            }
-        }
+        //  public void populate_collection(RequestTreeNode[] nodes) {
+        //      //  Gtk.TreeIter iter;
+        //      //  children.get_iter_first(out iter);
+        //      foreach (var node in nodes) {
+        //          add_child(null, node);
+        //      }
+        //  }
 
-        public void add_child(Gtk.TreeIter? parent, RequestTreeNode node) {
-            node.collection = this;
+        //  public void add_child(Gtk.TreeIter? parent, RequestTreeNode node) {
+        //      //  node.collection = this;
 
-            Gtk.TreeIter iter;
-            children.append(out iter, parent);
-            children.set(iter, Columns.NAME, node.name, Columns.PK, "", Columns.PIXBUF, null);
+        //      Gtk.TreeIter iter;
+        //      children.append(out iter, parent);
+        //      children.set(iter, Columns.NAME, node.name, Columns.PK, "", Columns.PIXBUF, null);
 
-            for (int i = 0; i < node.children.get_n_items(); i++) {
-                add_child(iter, (RequestTreeNode) node.children.get_item(i));
-            }
-        }
+        //      for (int i = 0; i < node.children.get_n_items(); i++) {
+        //          add_child(iter, (RequestTreeNode) node.children.get_item(i));
+        //      }
+        //  }
     }
 }

@@ -109,7 +109,9 @@ namespace Repose.Models {
             BINARY,
         }
 
-        public string name { get; set; default = ""; }
+        public string id { get; set; }
+        public string? parent_id { get; set; }
+        public string name { get; set; }
         public string name_display { 
             get {
                 return name == "" ? "New Request" : name;
@@ -133,7 +135,9 @@ namespace Repose.Models {
             default = new ParamTableListStore();
         }
 
-        public Request(string name, string url, string method) {
+        public Request(string id, string? parent_id, string name, string url, string method) {
+            this.id = id;
+            this.parent_id = parent_id;
             this.name = name;
             this.url = url;
             this.method = method;
@@ -141,7 +145,7 @@ namespace Repose.Models {
         }
 
         public static Request empty() {
-            return new Request("", "", "GET");
+            return new Request(Uuid.string_random(), null, "", "", "GET");
         }
 
         public void cancel() {
@@ -149,6 +153,20 @@ namespace Repose.Models {
                 cancellable.cancel();
                 cancellable = null;
             }
+        }
+
+        public static Request from_row(Db.RequestNodeRow row) throws Error {
+            assert(row.request_json != null);
+            var dto = (Db.RequestDto) Json.gobject_from_data(typeof(Db.RequestDto), row.request_json);
+            return new Request(dto.id, dto.parent_id, dto.name, dto.url, dto.method);
+        }
+
+        public Db.RequestDto to_dto() {
+            return new Db.RequestDto(id, parent_id, name, url, method);
+        }
+
+        public Db.RequestNodeRow to_row() throws Error {
+            return new Db.RequestNodeRow(id, parent_id, null, Json.gobject_to_data(this.to_dto(), null));
         }
     }
 }

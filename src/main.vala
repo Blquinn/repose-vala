@@ -17,6 +17,7 @@
  */
 
 using Repose;
+using Repose.Models.Db;
 
 int main (string[] args) {
 	message("Starting Repose application.");
@@ -28,7 +29,24 @@ int main (string[] args) {
 		new Utils.Dirs(); 
 	}
 
-	create_tmp_dirs();
+	Utils.Dirs.create_dirs();
+
+	var db_path = Path.build_filename(Utils.Dirs.data, "repose.db");
+	Sqlite.Database db;
+	var ec = Sqlite.Database.open(db_path, out db);
+	if (ec != Sqlite.OK) {
+		error("Failed to open sqlite database: %d", ec);
+	}
+
+	var request_dao = new Services.RequestDao(db);
+	request_dao.create_tables();
+
+	//  try {
+	//  	var reqs = request_dao.get_requests();
+	//  	var nodes = Models.RequestTreeNode.from_rows(reqs);
+	//  	message("NOdes len %d", nodes.size);
+	//  	foreach (var n in nodes) message("NOdes child len %d", n.children.size);
+	//  } catch (Error e) {}
 
 	app.activate.connect(() => {
 
@@ -37,7 +55,7 @@ int main (string[] args) {
 		var win = app.active_window;
 		if (win == null) {
 			message("Creating application window.");
-			win = new Widgets.MainWindow(app);
+			win = new Widgets.MainWindow(app, new Models.RootState(request_dao));
 		}
 		win.present();
 	});
@@ -55,10 +73,4 @@ void load_css() {
 		screen,
 		css_provider,
 		Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
-}
-
-void create_tmp_dirs() {
-	try {
-		File.new_for_path(Utils.Dirs.tmp).make_directory_with_parents();
-	} catch (Error e) {}
 }

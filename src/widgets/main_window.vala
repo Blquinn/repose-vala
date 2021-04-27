@@ -36,12 +36,13 @@ namespace Repose.Widgets {
 		private RequestEditor request_editor;
 		private Models.RootState root_state;
 
-		public MainWindow(Gtk.Application app) {
+		public MainWindow(Gtk.Application app, Models.RootState root_state) {
 			GLib.Object(application: app);
 
-			root_state = new Models.RootState();
+			this.root_state = root_state;
+			root_state.load_requests();
 
-			request_tree = new Widgets.RequestTree();
+			request_tree = new Widgets.RequestTree(root_state);
 			request_tree_container.pack_start(request_tree, true, true);
 
 			try {

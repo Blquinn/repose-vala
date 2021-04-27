@@ -22,28 +22,13 @@ namespace Repose.Widgets {
 	[GtkTemplate(ui = "/me/blq/Repose/ui/RequestTree.ui")]
     public class RequestTree : Gtk.ScrolledWindow {
 		[GtkChild] private unowned Gtk.TreeView request_list;
-		[GtkChild] private unowned Gtk.TreeStore request_list_store;
 
-        public RequestTree() {
-			//  request_list_store
-			// Populate with test data.
+		private Models.RootState root_state;
 
-			Gtk.TreeIter iter;
-			request_list_store.append(out iter, null);
-			request_list_store.set(iter, 0, "Collection 1");
-			Gtk.TreeIter child_iter;
-			request_list_store.append(out child_iter, iter);
-			request_list_store.set(child_iter, 0, "Folder 1");
-			Gtk.TreeIter child_iter_2;
-			request_list_store.append(out child_iter_2, child_iter);
-			request_list_store.set(child_iter_2, 0, "Request 1");
-
-			Gtk.TreeIter child_iter_n;
-			for (var i = 2; i < 200; i++) {
-				request_list_store.append(out child_iter_n, child_iter);
-				request_list_store.set(child_iter_n, 0, "Request %d".printf(i));
-			}
-        }
+        public RequestTree(Models.RootState root_state) {
+			this.root_state = root_state;
+			request_list.model = root_state.request_tree;
+		}
 
 		[GtkCallback]
 		private bool on_request_list_button_press_event(Gtk.Widget widget, Gdk.EventButton event) {
@@ -53,7 +38,7 @@ namespace Repose.Widgets {
 
 			Gtk.TreeIter iter;
 			request_list.get_selection().get_selected(null, out iter);	
-			var path = request_list_store.get_path(iter);
+			var path = root_state.request_tree.get_path(iter);
 			if (path == null) return true;
 			var expanded = request_list.is_row_expanded(path);
 			if (expanded) {

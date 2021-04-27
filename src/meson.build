@@ -8,6 +8,8 @@ repose_sources = [
   'model/collection_model.vala',
   'model/folder_model.vala',
   'model/request_tree_node.vala',
+  'model/request_tree_store.vala',
+  'model/db/request_row.vala',
   'widgets/main_window.vala',
   'widgets/request_editor.vala',
   'widgets/request_container.vala',
@@ -17,6 +19,7 @@ repose_sources = [
   'widgets/collection.vala',
   'widgets/request_tree.vala',
   'services/http_client.vala',
+  'services/request_dao.vala',
   'utils/humanize.vala',
   'utils/hex_dump.vala',
   'utils/editor_langs.vala',
@@ -40,6 +43,7 @@ repose_deps = [
   dependency('libxml-2.0', required: true),
   dependency('uchardet', required: true),
   dependency('gee-0.8', version: '>= 0.8.5', required: true),
+  dependency('sqlite3', required: true),
   cc.find_library('m', required : true),
 ]
 

@@ -149,7 +149,9 @@ namespace Repose.Widgets {
         }
 
         [GtkCallback]
-        private void on_save_pressed(Gtk.Button btn) {}
+        private void on_save_pressed(Gtk.Button btn) {
+            root_state.save_request(root_state.active_request);
+        }
 
         [GtkCallback]
         private async void on_send_pressed(Gtk.Button btn) {

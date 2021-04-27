@@ -20,11 +20,14 @@
 namespace Repose.Utils {
     public class Dirs {
         public static string tmp;
+        public static string data;
+
         private static string alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         static construct {
             Random.set_seed((uint32)get_real_time());
             tmp = Path.build_filename(Environment.get_tmp_dir(), "repose", "responses");
+            data = Path.build_filename(Environment.get_user_data_dir(), "repose");
         }
 
         public static string gen_rand_tmp_path(int name_size = 6) {
@@ -34,6 +37,16 @@ namespace Repose.Utils {
                 chars[i] = alphabet[c_idx];
             }
             return Path.build_filename(tmp, (string) chars);
+        }
+
+        public static void create_dirs() {
+            try {
+                File.new_for_path(tmp).make_directory_with_parents();
+            } catch (Error e) {}
+
+            try {
+                File.new_for_path(data).make_directory_with_parents();
+            } catch (Error e) {}
         }
     }
 }
