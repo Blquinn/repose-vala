@@ -26,8 +26,8 @@ namespace Repose.Widgets {
 
         [GtkChild] private unowned Gtk.Stack request_response_stack;
         [GtkChild] private unowned Gtk.Entry request_name_entry;
-        //  [GtkChild] private unowned Gtk.ComboBox request_method_combo;
         [GtkChild] private unowned Gtk.ComboBoxText request_method_combo;
+        [GtkChild] private unowned Gtk.Entry request_method_combo_entry;
         [GtkChild] private unowned Gtk.Entry url_entry;
         [GtkChild] private unowned Gtk.Button send_button;
         //  [GtkChild] private unowned Gtk.Button save_button;
@@ -117,7 +117,7 @@ namespace Repose.Widgets {
 
             request_name_entry.text = request.name;
             url_entry.text = request.url;
-            request_method_combo.active_id = request.method;
+            request_method_combo_entry.text = request.method;
 
             // Disable animation while changing stack via state change.
             var trans = request_response_stack.transition_type;
@@ -131,7 +131,7 @@ namespace Repose.Widgets {
 
             name_binding = request.bind_property("name", request_name_entry, "text", BindingFlags.BIDIRECTIONAL);
             url_binding = request.bind_property("url", url_entry, "text", BindingFlags.BIDIRECTIONAL);
-            method_binding = request.bind_property("method", request_method_combo, "active-id", BindingFlags.DEFAULT);
+            method_binding = request.bind_property("method", request_method_combo_entry, "text", BindingFlags.DEFAULT);
             active_tab_binding = request.bind_property("active_tab", request_response_stack, "visible-child", BindingFlags.DEFAULT, 
                 (_, from, ref to) => {
                     if (from.get_enum() == Models.Request.Tab.REQUEST) {

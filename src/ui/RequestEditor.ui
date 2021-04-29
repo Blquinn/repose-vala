@@ -48,7 +48,7 @@
               <item id="TRACE" translatable="yes">TRACE</item>
             </items>
             <child internal-child="entry">
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="request_method_combo_entry">
                 <property name="can-focus">True</property>
               </object>
             </child>

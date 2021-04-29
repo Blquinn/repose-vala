@@ -107,7 +107,7 @@ namespace Repose.Models {
                 var ar = (Models.Request) active_requests.get_item(i);
                 if (ar.id == id) {
                     active_request = ar;
-                    break;
+                    return;
                 }
             }
             var row = request_dao.get_request_by_id(id);
