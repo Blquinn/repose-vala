@@ -17,6 +17,11 @@
  */
 
 namespace Repose.Models {
+
+    using Repose;
+
+    delegate void UpdateRowFunc(Gtk.TreeIter iter);
+
     public class RequestTreeStore : Gtk.TreeStore, Gtk.TreeDragDest {
 
         enum Columns { NAME, ID, IS_FOLDER }
@@ -44,7 +49,7 @@ namespace Repose.Models {
             foreach (var node in nodes) {
                 append(out iter, parent);
 
-                var name = node.name == "" ? "New Request" : node.name;
+                var name = format_request_name(node.name);
 
                 set(iter, 
                     Columns.NAME, name, 
@@ -53,6 +58,25 @@ namespace Repose.Models {
 
                 _populate(node.children, iter, iter);
             }
+        }
+
+        private string format_request_name(string name) {
+            return name == "" ? "New Request" : name;
+        }
+
+        public void update_request(Models.Request req) {
+            var id = req.id;
+            var name = format_request_name(req.name);
+
+            @foreach((self, path, iter) => {
+                Value val;
+                get_value(iter, Columns.ID, out val);
+                if (val.get_string() == id) {
+                    set(iter, Columns.NAME, name);
+                    return true;
+                }
+                return false;
+            });
         }
     }
 }

@@ -144,6 +144,10 @@ namespace Repose.Models {
             this.response = new Response(this);
         }
 
+        ~Request() {
+            debug("Destroying request %s", id);
+        }
+
         public static Request empty() {
             return new Request(Uuid.string_random(), null, "", "", "GET");
         }
@@ -158,7 +162,7 @@ namespace Repose.Models {
         public static Request from_row(Db.RequestNodeRow row) throws Error {
             assert(row.request_json != null);
             var dto = (Db.RequestDto) Json.gobject_from_data(typeof(Db.RequestDto), row.request_json);
-            return new Request(dto.id, dto.parent_id, dto.name, dto.url, dto.method);
+            return new Request(row.id, row.parent_id, dto.name, dto.url, dto.method);
         }
 
         public Db.RequestDto to_dto() {

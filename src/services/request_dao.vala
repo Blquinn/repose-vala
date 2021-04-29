@@ -117,6 +117,8 @@ namespace Repose.Services {
             update requests set parent_id = ?, folder_json = ?, request_json = ?
             where id = ?
             """;
+            
+            debug("Saving request: %s", request.to_string());
 
             Sqlite.Statement stmt;
             var rc = db.prepare_v2(query, query.length, out stmt);

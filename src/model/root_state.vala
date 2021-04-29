@@ -65,6 +65,9 @@ namespace Repose.Models {
 
         public void save_request(Request req) {
             debug("Saving request: %s", req.id);
+
+            request_tree.update_request(req);
+
             GLib.Idle.add(() => {
                 try {
                     request_dao.update_request(req.to_row());
