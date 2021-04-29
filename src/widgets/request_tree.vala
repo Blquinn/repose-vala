@@ -48,5 +48,23 @@ namespace Repose.Widgets {
 			}
 			return true;
 		}
+
+		[GtkCallback]
+		private void on_request_list_row_activated(Gtk.TreePath path, Gtk.TreeViewColumn column) {
+			Gtk.TreeIter iter;
+			if (!root_state.request_tree.get_iter(out iter, path)) return;
+			Value val;
+
+			root_state.request_tree.get_value(iter, Models.RequestTreeStore.Columns.IS_FOLDER, out val);
+			if (val.get_boolean()) return;
+
+			root_state.request_tree.get_value(iter, Models.RequestTreeStore.Columns.ID, out val);
+
+			try {
+				root_state.load_request_by_id(val.get_string());
+			} catch (Error e) {
+				warning("Failed to load activated request: %s", e.message);
+			}
+		}
     }
 }

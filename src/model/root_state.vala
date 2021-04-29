@@ -97,5 +97,20 @@ namespace Repose.Models {
             var req = active_request;
             yield http_client.do_request(req, req.response);
         }
+
+        public void load_request_by_id(string id) throws Error {
+            var n = active_requests.get_n_items();
+            for (int i = 0; i < n; i++) {
+                var ar = (Models.Request) active_requests.get_item(i);
+                if (ar.id == id) {
+                    active_request = ar;
+                    break;
+                }
+            }
+            var row = request_dao.get_request_by_id(id);
+            var req = Models.Request.from_row(row);
+            active_requests.append(req);
+            active_request = req;
+        }
     }
 }

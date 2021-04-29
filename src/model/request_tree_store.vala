@@ -17,12 +17,21 @@
  */
 
 namespace Repose.Models {
-    public class RequestTreeStore : Gtk.TreeStore {
+    public class RequestTreeStore : Gtk.TreeStore, Gtk.TreeDragDest {
 
         enum Columns { NAME, ID, IS_FOLDER }
 
         public RequestTreeStore() {
             set_column_types({typeof(string), typeof(string), typeof(bool)});
+        }
+
+        // Prevent dropping into non-folders.
+		public bool row_drop_possible (Gtk.TreePath dest_path, Gtk.SelectionData selection_data) {
+            Gtk.TreeIter iter;
+            if (!get_iter(out iter, dest_path)) return false;
+            Value val;
+            get_value(iter, Columns.IS_FOLDER, out val);
+            return !val.get_boolean();
         }
 
         public void populate_store(Gee.List<Models.RequestTreeNode> nodes) {

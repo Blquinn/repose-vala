@@ -59,6 +59,34 @@ namespace Repose.Services {
             }
             return requests;
         }
+        
+        public RequestNodeRow get_request_by_id(string id) throws Error {
+            const string query = """ 
+                select parent_id, folder_json, request_json 
+                from requests
+                where id = ?
+                ;
+            """;
+            Sqlite.Statement stmt;
+            var rc = db.prepare_v2(query, query.length, out stmt);
+            if (rc != Sqlite.OK) {
+                message("Failed to prepare get requests statement, errcode: %d", rc);
+                throw new Error(Quark.from_string("error"), rc, "Failed to prepare get requets statement, errcode: %d", rc);
+            }
+
+            stmt.bind_text(1, id);
+
+            if (stmt.step() != Sqlite.ROW) 
+                throw new Error(Quark.from_string("repose"), 1,  "Failed to find request by id.");
+
+            return new RequestNodeRow(
+                id,
+                stmt.column_text(0),
+                stmt.column_text(1),
+                stmt.column_text(2)
+            );
+        }
+
 
         public void insert_request(RequestNodeRow request) throws Error {
             const string query = """
