@@ -18,6 +18,7 @@ repose_sources = [
   'widgets/active_request_tab.vala',
   'widgets/collection.vala',
   'widgets/request_tree.vala',
+  'widgets/folder_dialog.vala',
   'services/http_client.vala',
   'services/request_dao.vala',
   'utils/humanize.vala',

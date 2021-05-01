@@ -144,10 +144,6 @@ namespace Repose.Models {
             this.response = new Response(this);
         }
 
-        ~Request() {
-            debug("Destroying request %s", id);
-        }
-
         public static Request empty() {
             return new Request(Uuid.string_random(), null, "", "", "GET");
         }

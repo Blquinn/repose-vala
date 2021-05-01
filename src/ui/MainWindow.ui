@@ -37,7 +37,7 @@
                 <property name="margin-end">30</property>
                 <property name="label" translatable="yes">&lt;b&gt;No request has been selected.&lt;/b&gt;
 
-Select a request in the left hand panel, or create a new request with the button on the top left corner.</property>
+Select a request in the left hand panel, or create a new request with the button on the top right corner.</property>
                 <property name="use-markup">True</property>
                 <property name="justify">center</property>
                 <property name="wrap">True</property>

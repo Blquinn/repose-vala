@@ -93,6 +93,7 @@
             <property name="reorderable">True</property>
             <property name="search-column">0</property>
             <signal name="button-press-event" handler="on_request_list_button_press_event" swapped="no"/>
+            <signal name="drag-data-received" handler="on_request_list_drag_data_received" swapped="no"/>
             <signal name="row-activated" handler="on_request_list_row_activated" swapped="no"/>
             <child>
               <object class="GtkTreeViewColumn">
