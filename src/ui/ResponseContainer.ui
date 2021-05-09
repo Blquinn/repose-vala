@@ -558,13 +558,19 @@
                         <property name="can-focus">True</property>
                         <property name="shadow-type">in</property>
                         <child>
-                          <object class="GtkTextView" id="response_text_raw">
+                          <object class="GtkSourceView" id="response_text_raw">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="editable">False</property>
+                            <property name="left-margin">2</property>
+                            <property name="right-margin">2</property>
                             <property name="cursor-visible">False</property>
                             <property name="accepts-tab">False</property>
                             <property name="monospace">True</property>
+                            <property name="show-line-numbers">True</property>
+                            <property name="tab-width">4</property>
+                            <property name="indent-width">4</property>
+                            <property name="indent-on-tab">False</property>
                           </object>
                         </child>
                       </object>
