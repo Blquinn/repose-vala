@@ -57,7 +57,8 @@ namespace Repose.Widgets {
 
                 root_state.create_folder(folder);
             } finally {
-                close();
+                name_entry.text = "";
+                folder_tree.expand_all();
             }
         }
     }
