@@ -101,7 +101,7 @@ namespace Repose.Models {
                 append(out new_iter, parent_iter);
             }
 
-            set_valuesv(new_iter, {Columns.ID, Columns.NAME, Columns.IS_FOLDER}, {req.id, req.name, is_folder});
+            set_valuesv(new_iter, {Columns.ID, Columns.NAME, Columns.IS_FOLDER}, {req.id, name, is_folder});
         }
     }
 }

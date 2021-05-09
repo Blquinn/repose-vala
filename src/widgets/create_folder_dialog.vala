@@ -39,7 +39,6 @@ namespace Repose.Widgets {
                 if (!row_is_selected) {
                     debug("Folder not selected, saving folder to root.");
 
-                    //  root_state.save_request(req);
                     root_state.create_folder(folder);
                     return;
                 }
