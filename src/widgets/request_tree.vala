@@ -113,7 +113,7 @@ namespace Repose.Widgets {
 		[GtkCallback]
 		private void on_new_folder_button_clicked() {
 			debug("Showing folder dialog.");
-			var diag = new Widgets.FolderDialog();
+			var diag = new Widgets.CreateFolderDialog(root_state);
 			diag.set_transient_for((Gtk.Window) get_toplevel());
 			diag.show_all();
 		}

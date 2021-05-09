@@ -48,32 +48,43 @@ namespace Repose.Models {
         public void add_new_request() {
             var req = Request.empty();
             debug("Creating request: %s", req.id);
-            GLib.Idle.add(() => {
-                try {
-                    request_dao.insert_request(req.to_row());
-                } catch (Error e) {
-                    warning("Failed to create request: %s", e.message);
-                    return false;
-                }
-
-                debug("Successfully created request: %s", req.id);
-                active_requests.append(req);
-                active_request = req;
-                return false;
-            });
+            active_requests.append(req);
+            active_request = req;
         }
 
         public void save_request(Request req) {
             debug("Saving request: %s", req.id);
 
-            request_tree.update_request(req);
+            request_tree.update_node(req, req.persisted, false);
 
             GLib.Idle.add(() => {
                 try {
-                    request_dao.update_request(req.to_row());
+                    if (req.persisted) { 
+                        request_dao.update_request_node(req.to_row());
+                    } else {
+                        request_dao.insert_request_node(req.to_row());
+                    }
+                    req.persisted = true;
                     debug("Successfully saved request: %s", req.id);
                 } catch (Error e) {
                     warning("Failed to update request: %s", e.message);
+                }
+
+                return false;
+            });
+        }
+        
+        public void create_folder(FolderModel folder) {
+            debug("Creating folder: %s", folder.id);
+
+            request_tree.update_node(folder, false, true);
+
+            GLib.Idle.add(() => {
+                try {
+                    request_dao.insert_request_node(folder.to_row());
+                    debug("Successfully saved folder: %s", folder.id);
+                } catch (Error e) {
+                    warning("Failed to save folder: %s", e.message);
                 }
 
                 return false;

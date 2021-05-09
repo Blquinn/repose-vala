@@ -86,6 +86,7 @@
         <property name="shadow-type">in</property>
         <child>
           <object class="GtkTreeView" id="request_list">
+            <property name="name">request_list</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="model">request_list_store</property>
@@ -94,6 +95,9 @@
             <property name="search-column">0</property>
             <signal name="button-press-event" handler="on_request_list_button_press_event" swapped="no"/>
             <signal name="row-activated" handler="on_request_list_row_activated" swapped="no"/>
+            <child internal-child="selection">
+              <object class="GtkTreeSelection"/>
+            </child>
             <child>
               <object class="GtkTreeViewColumn">
                 <property name="title" translatable="yes">Name</property>

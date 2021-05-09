@@ -64,19 +64,44 @@ namespace Repose.Models {
             return name == "" ? "New Request" : name;
         }
 
-        public void update_request(Models.Request req) {
+        public void update_node(Models.BaseTreeNode req, bool is_update, bool is_folder) {
             var id = req.id;
             var name = format_request_name(req.name);
 
-            @foreach((self, path, iter) => {
-                Value val;
-                get_value(iter, Columns.ID, out val);
-                if (val.get_string() == id) {
-                    set(iter, Columns.NAME, name);
-                    return true;
-                }
-                return false;
-            });
+            if (is_update) {
+                // Update existing row.
+                @foreach((self, path, iter) => {
+                    Value val;
+                    get_value(iter, Columns.ID, out val);
+                    if (val.get_string() == id) {
+                        set(iter, Columns.NAME, name);
+                        return true;
+                    }
+                    return false;
+                });
+                return;
+            }
+
+            // Add row.
+            Gtk.TreeIter new_iter;
+            if (req.parent_id == null) {
+                append(out new_iter, null);
+            } else {
+                // Find parent iter.
+                Gtk.TreeIter? parent_iter = null;
+                @foreach((self, path, iter) => {
+                    Value val;
+                    get_value(iter, Columns.ID, out val);
+                    if (val.get_string() == req.parent_id) {
+                        parent_iter = iter;
+                        return true;
+                    }
+                    return false;
+                });
+                append(out new_iter, parent_iter);
+            }
+
+            set_valuesv(new_iter, {Columns.ID, Columns.NAME, Columns.IS_FOLDER}, {req.id, req.name, is_folder});
         }
     }
 }

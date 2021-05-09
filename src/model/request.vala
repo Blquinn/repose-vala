@@ -89,7 +89,7 @@ namespace Repose.Models {
         public string binary { get; set; default = ""; }
     }
     
-    public class Request : Object {
+    public class Request : BaseTreeNode {
         public enum Tab {
             REQUEST,
             RESPONSE
@@ -109,9 +109,8 @@ namespace Repose.Models {
             BINARY,
         }
 
-        public string id { get; set; }
-        public string? parent_id { get; set; }
-        public string name { get; set; }
+        // persisted indicates whether the request has been stored in the database, or not.
+        public bool persisted { get; set; }
         public string name_display { 
             get {
                 return name == "" ? "New Request" : name;
@@ -135,17 +134,16 @@ namespace Repose.Models {
             default = new ParamTableListStore();
         }
 
-        public Request(string id, string? parent_id, string name, string url, string method) {
-            this.id = id;
-            this.parent_id = parent_id;
-            this.name = name;
+        public Request(string id, string? parent_id, string name, string url, string method, bool persisted) {
+            base(id, name, parent_id);
             this.url = url;
             this.method = method;
             this.response = new Response(this);
+            this.persisted = persisted;
         }
 
         public static Request empty() {
-            return new Request(Uuid.string_random(), null, "", "", "GET");
+            return new Request(Uuid.string_random(), null, "", "", "GET", false);
         }
 
         public void cancel() {
@@ -158,7 +156,7 @@ namespace Repose.Models {
         public static Request from_row(Db.RequestNodeRow row) throws Error {
             assert(row.request_json != null);
             var dto = (Db.RequestDto) Json.gobject_from_data(typeof(Db.RequestDto), row.request_json);
-            return new Request(row.id, row.parent_id, dto.name, dto.url, dto.method);
+            return new Request(row.id, row.parent_id, dto.name, dto.url, dto.method, true);
         }
 
         public Db.RequestDto to_dto() {

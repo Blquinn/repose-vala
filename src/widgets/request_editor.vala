@@ -150,7 +150,22 @@ namespace Repose.Widgets {
 
         [GtkCallback]
         private void on_save_pressed(Gtk.Button btn) {
-            root_state.save_request(root_state.active_request);
+            var req = root_state.active_request;
+            if (req.persisted) {
+                root_state.save_request(req);
+                return;
+            }
+
+            var diag = new Widgets.SaveRequestDialog(root_state);
+            diag.set_transient_for((Gtk.Window) get_toplevel());
+            diag.show_all();
+        }
+
+        [GtkCallback]
+        private void on_save_as_button_clicked() {
+            var diag = new Widgets.CreateFolderDialog(root_state);
+            diag.set_transient_for((Gtk.Window) get_toplevel());
+            diag.show_all();
         }
 
         [GtkCallback]

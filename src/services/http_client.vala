@@ -202,7 +202,7 @@ namespace Repose.Services {
                     var cdt = charset_detector.get_charset();
 
                     message("Detected character encoding: %s", cdt);
-                    if (cdt.up() != text_encoding.up()) {
+                    if (text_encoding == null || cdt.up() != text_encoding.up()) {
                         message("Content-Type text encoding: %s not equal detected encoding: %s", text_encoding, cdt);
                     }
 

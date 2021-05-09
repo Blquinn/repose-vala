@@ -32,6 +32,18 @@ namespace Repose.Models.Db {
             this.method = method;
         }
     }
+    
+    public class FolderDto : Object {
+        public string id { get; set; }
+        public string? parent_id { get; set; }
+        public string name { get; set; }
+
+        public FolderDto(string id, string? parent_id, string name) {
+            this.id = id;
+            this.parent_id = parent_id;
+            this.name = name;
+        }
+    }
 
     public class RequestNodeRow {
         public string id;

@@ -21,6 +21,7 @@ using Repose.Models.Db;
 
 int main (string[] args) {
 	message("Starting Repose application.");
+
 	var app = new Gtk.Application("me.blq.Repose", ApplicationFlags.FLAGS_NONE);
 
 	typeof(Gtk.SourceView).ensure();

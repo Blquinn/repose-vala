@@ -1,5 +1,6 @@
 repose_sources = [
   'main.vala',
+  'model/base_tree_node.vala',
   'model/request.vala',
   'model/response.vala',
   'model/root_state.vala',
@@ -19,6 +20,8 @@ repose_sources = [
   'widgets/collection.vala',
   'widgets/request_tree.vala',
   'widgets/folder_dialog.vala',
+  'widgets/create_folder_dialog.vala',
+  'widgets/save_request_dialog.vala',
   'services/http_client.vala',
   'services/request_dao.vala',
   'utils/humanize.vala',
@@ -30,6 +33,7 @@ repose_sources = [
 vapi_dir = meson.current_source_dir() / 'vapi'
 
 add_project_arguments('-DG_LOG_DOMAIN="Repose"', language : 'c')
+add_project_arguments('-DGETTEXT_PACKAGE="gettext"', language : 'c')
 add_project_arguments(['--vapidir', vapi_dir], language: 'vala')
 
 cc = meson.get_compiler('c')

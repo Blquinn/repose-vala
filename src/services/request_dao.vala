@@ -88,7 +88,7 @@ namespace Repose.Services {
         }
 
 
-        public void insert_request(RequestNodeRow request) throws Error {
+        public void insert_request_node(RequestNodeRow request) throws Error {
             const string query = """
             insert into requests (id, parent_id, folder_json, request_json) values (?, ?, ?, ?)
             """;
@@ -105,20 +105,19 @@ namespace Repose.Services {
             stmt.bind_text(3, request.folder_json);
             stmt.bind_text(4, request.request_json);
 
-            rc = stmt.step();
-            if (rc != Sqlite.DONE) {
-                message("Failed to insert request, errcode: %d", rc);
+            if (stmt.step() != Sqlite.DONE) {
+                message("Failed to insert request, errcode: %d (%s)", rc, db.errmsg());
                 throw new Error(Quark.from_string("error"), rc, "Failed to insert request, errcode: %d", rc);
             }
         }
 
-        public void update_request(RequestNodeRow request) throws Error {
+        public void update_request_node(RequestNodeRow request) throws Error {
             const string query = """
             update requests set parent_id = ?, folder_json = ?, request_json = ?
             where id = ?
             """;
             
-            debug("Saving request: %s", request.to_string());
+            debug("Saving request node: %s", request.to_string());
 
             Sqlite.Statement stmt;
             var rc = db.prepare_v2(query, query.length, out stmt);
