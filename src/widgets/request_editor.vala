@@ -53,14 +53,11 @@ namespace Repose.Widgets {
 
             bind_request();
 
-            key_press_event.connect(on_key_pressed);
-            request_response_stack.notify.connect(on_response_stack_notify);
             root_state.active_request_changed.connect(on_active_request_changed);
-            request_method_combo.changed.connect(on_request_method_combo_changed);
-            url_entry.changed.connect(on_url_entry_changed);
         }
-
-        private bool on_key_pressed(Gdk.EventKey key) {
+        
+        [GtkCallback]
+        private bool on_key_press_event(Gdk.EventKey key) {
             if ((key.state & Gdk.ModifierType.CONTROL_MASK) == 0) return true;
 
             switch (key.keyval) {
@@ -93,17 +90,6 @@ namespace Repose.Widgets {
 
         private void on_active_request_changed() {
             bind_request();
-        }
-
-        private void on_response_stack_notify(ParamSpec param) {
-            if (param.name != "visible-child") return;
-
-            var req = root_state.active_request;
-            if (request_response_stack.visible_child == request_container) {
-                req.active_tab = Models.Request.Tab.REQUEST;
-            } else {
-                req.active_tab = Models.Request.Tab.RESPONSE;
-            }
         }
 
         private void bind_request() {
@@ -143,6 +129,38 @@ namespace Repose.Widgets {
                 });
         }
 
+        public async void send_request() {
+            var request = root_state.active_request;
+
+            if (request.url == "") { // TODO: Error states?
+                url_entry.get_style_context().add_class("error");
+                return;
+            }
+
+            var uri = new Soup.URI(request.url);
+            if (uri == null || uri.scheme == "" || uri.host == "") {
+                url_entry.get_style_context().add_class("error");
+                return;
+            }
+
+            message("Executing request: %s", request.name);
+            request_response_stack.set_visible_child(response_container);
+            yield root_state.execute_active_request();
+        }
+
+        [GtkCallback]
+        private void on_request_response_stack_notify(ParamSpec param) {
+            if (param.name != "visible-child") return;
+
+            var req = root_state.active_request;
+            if (request_response_stack.visible_child == request_container) {
+                req.active_tab = Models.Request.Tab.REQUEST;
+            } else {
+                req.active_tab = Models.Request.Tab.RESPONSE;
+            }
+        }
+
+        [GtkCallback]
         private void on_request_method_combo_changed() {
             var request = root_state.active_request;
             request.method = request_method_combo.get_active_text();
@@ -178,30 +196,11 @@ namespace Repose.Widgets {
             yield send_request();
         }
 
-        public async void send_request() {
-            var request = root_state.active_request;
-
-            if (request.url == "") { // TODO: Error states?
-                url_entry.get_style_context().add_class("error");
-                return;
-            }
-
-            var uri = new Soup.URI(request.url);
-            if (uri == null || uri.scheme == "" || uri.host == "") {
-                url_entry.get_style_context().add_class("error");
-                return;
-            }
-
-            message("Executing request: %s", request.name);
-            request_response_stack.set_visible_child(response_container);
-            yield root_state.execute_active_request();
-        }
-        
         [GtkCallback]
         private void on_request_name_changed() {}
 
+        [GtkCallback]
         private void on_url_entry_changed() {
-            // Clear error class.
             url_entry.get_style_context().remove_class("error");
         }
     }

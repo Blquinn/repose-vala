@@ -24,14 +24,22 @@ namespace Repose.Models {
 
     public class RequestTreeStore : Gtk.TreeStore, Gtk.TreeDragDest {
 
-        enum Columns { NAME, ID, IS_FOLDER }
+        enum Columns { NAME, ID, IS_FOLDER, ICON }
+
+        private Gdk.Pixbuf folder_icon;
 
         public RequestTreeStore() {
-            set_column_types({typeof(string), typeof(string), typeof(bool)});
+            var theme = Gtk.IconTheme.get_default();
+            try {
+                folder_icon = theme.load_icon("folder-symbolic", Gtk.IconSize.BUTTON, 0);
+            } catch (Error e) {
+                error("Failed to load icon: %s", e.message);
+            }
+            set_column_types({typeof(string), typeof(string), typeof(bool), typeof(Gdk.Pixbuf)});
         }
 
         // Prevent dropping into non-folders.
-		public bool row_drop_possible (Gtk.TreePath dest_path, Gtk.SelectionData selection_data) {
+		public bool row_drop_possible(Gtk.TreePath dest_path, Gtk.SelectionData selection_data) {
             Gtk.TreeIter iter;
             if (!get_iter(out iter, dest_path)) return false;
             Value val;
@@ -54,7 +62,8 @@ namespace Repose.Models {
                 set(iter, 
                     Columns.NAME, name, 
                     Columns.ID, node.id, 
-                    Columns.IS_FOLDER, node.is_folder);
+                    Columns.IS_FOLDER, node.is_folder,
+                    Columns.ICON, node.is_folder ? folder_icon : null);
 
                 _populate(node.children, iter, iter);
             }
@@ -64,9 +73,9 @@ namespace Repose.Models {
             return name == "" ? "New Request" : name;
         }
 
-        public void update_node(Models.BaseTreeNode req, bool is_update, bool is_folder) {
-            var id = req.id;
-            var name = format_request_name(req.name);
+        public void update_node(Models.BaseTreeNode node, bool is_update, bool is_folder) {
+            var id = node.id;
+            var name = format_request_name(node.name);
 
             if (is_update) {
                 // Update existing row.
@@ -84,7 +93,7 @@ namespace Repose.Models {
 
             // Add row.
             Gtk.TreeIter new_iter;
-            if (req.parent_id == null) {
+            if (node.parent_id == null) {
                 append(out new_iter, null);
             } else {
                 // Find parent iter.
@@ -92,7 +101,7 @@ namespace Repose.Models {
                 @foreach((self, path, iter) => {
                     Value val;
                     get_value(iter, Columns.ID, out val);
-                    if (val.get_string() == req.parent_id) {
+                    if (val.get_string() == node.parent_id) {
                         parent_iter = iter;
                         return true;
                     }
@@ -101,7 +110,11 @@ namespace Repose.Models {
                 append(out new_iter, parent_iter);
             }
 
-            set_valuesv(new_iter, {Columns.ID, Columns.NAME, Columns.IS_FOLDER}, {req.id, name, is_folder});
+            set(new_iter, 
+                Columns.NAME, name, 
+                Columns.ID, node.id, 
+                Columns.IS_FOLDER, is_folder,
+                Columns.ICON, is_folder ? folder_icon : null);
         }
     }
 }

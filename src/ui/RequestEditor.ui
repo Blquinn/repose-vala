@@ -22,6 +22,7 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="orientation">vertical</property>
+    <signal name="key-press-event" handler="on_key_press_event" swapped="no"/>
     <child>
       <object class="GtkEntry" id="request_name_entry">
         <property name="visible">True</property>
@@ -63,6 +64,7 @@
               <item id="OPTIONS" translatable="yes">OPTIONS</item>
               <item id="TRACE" translatable="yes">TRACE</item>
             </items>
+            <signal name="changed" handler="on_request_method_combo_changed" swapped="no"/>
             <child internal-child="entry">
               <object class="GtkEntry" id="request_method_combo_entry">
                 <property name="can-focus">True</property>
@@ -81,6 +83,7 @@
             <property name="can-focus">True</property>
             <property name="placeholder-text" translatable="yes">Url</property>
             <signal name="activate" handler="on_url_entry_activate" swapped="no"/>
+            <signal name="changed" handler="on_url_entry_changed" swapped="no"/>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -177,6 +180,7 @@
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="transition-type">slide-left-right</property>
+        <signal name="notify" handler="on_request_response_stack_notify" swapped="no"/>
         <child>
           <placeholder/>
         </child>

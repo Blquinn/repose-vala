@@ -104,6 +104,12 @@
                 <property name="clickable">True</property>
                 <property name="reorderable">True</property>
                 <child>
+                  <object class="GtkCellRendererPixbuf" id="folder_icon"/>
+                  <attributes>
+                    <attribute name="pixbuf">3</attribute>
+                  </attributes>
+                </child>
+                <child>
                   <object class="GtkCellRendererText" id="name_text"/>
                   <attributes>
                     <attribute name="text">0</attribute>

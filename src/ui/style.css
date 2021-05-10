@@ -1,2 +1,2 @@
-#request_list.view.expander { -gtk-icon-source: -gtk-icontheme("folder-symbolic"); }
-#request_list.view.expander:checked { -gtk-icon-source: -gtk-icontheme("folder-open-symbolic"); }
+/* #request_list.view.expander { -gtk-icon-source: -gtk-icontheme("folder-symbolic"); } */
+/* #request_list.view.expander:checked { -gtk-icon-source: -gtk-icontheme("folder-open-symbolic"); } */
