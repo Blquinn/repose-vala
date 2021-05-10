@@ -132,7 +132,7 @@ namespace Repose.Widgets {
         public async void send_request() {
             var request = root_state.active_request;
 
-            if (request.url == "") { // TODO: Error states?
+            if (request.url == "") {
                 url_entry.get_style_context().add_class("error");
                 return;
             }
@@ -181,7 +181,7 @@ namespace Repose.Widgets {
 
         [GtkCallback]
         private void on_save_as_button_clicked() {
-            var diag = new Widgets.CreateFolderDialog(root_state);
+            var diag = new Widgets.SaveRequestDialog(root_state);
             diag.set_transient_for((Gtk.Window) get_toplevel());
             diag.show_all();
         }

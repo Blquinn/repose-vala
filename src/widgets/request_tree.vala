@@ -63,6 +63,19 @@ namespace Repose.Widgets {
 					request_list.model = root_state.request_tree;
 				}
 			});
+
+			request_list.get_selection().set_select_function(request_list_select);
+		}
+
+		bool request_list_select(Gtk.TreeSelection selection, Gtk.TreeModel model, Gtk.TreePath path, bool path_currently_selected) {
+			if (path_currently_selected) return true;
+
+			Gtk.TreeIter iter;
+			request_list.model.get_iter(out iter, path);
+
+			Value val;
+			request_list.model.get_value(iter, Models.RequestTreeStore.Columns.ID, out val);
+			return val.get_string() != Models.RequestTreeStore.placeholder_id;
 		}
 
 		[GtkCallback]
@@ -72,7 +85,10 @@ namespace Repose.Widgets {
 			if (event.button != Gdk.BUTTON_PRIMARY) return false;
 
 			Gtk.TreeIter iter;
-			request_list.get_selection().get_selected(null, out iter);	
+			if (!request_list.get_selection().get_selected(null, out iter)) {
+				debug("No selection.");
+				return false;
+			}
 
 			Gtk.TreePath path;
 			if (search_active) {
@@ -96,15 +112,22 @@ namespace Repose.Widgets {
 
 			Gtk.TreeIter iter;
 			if (!root_state.request_tree.get_iter(out iter, path)) return;
+
 			Value val;
+
+			root_state.request_tree.get_value(iter, Models.RequestTreeStore.Columns.ID, out val);
+
+			var id = val.get_string();
+			if (id == Models.RequestTreeStore.placeholder_id) {
+				debug("Activated placeholder, doing nothing.");
+				return;
+			}
 
 			root_state.request_tree.get_value(iter, Models.RequestTreeStore.Columns.IS_FOLDER, out val);
 			if (val.get_boolean()) return;
 
-			root_state.request_tree.get_value(iter, Models.RequestTreeStore.Columns.ID, out val);
-
 			try {
-				root_state.load_request_by_id(val.get_string());
+				root_state.load_request_by_id(id);
 			} catch (Error e) {
 				warning("Failed to load activated request: %s", e.message);
 			}

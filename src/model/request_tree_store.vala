@@ -22,7 +22,12 @@ namespace Repose.Models {
 
     delegate void UpdateRowFunc(Gtk.TreeIter iter);
 
-    public class RequestTreeStore : Gtk.TreeStore, Gtk.TreeDragDest {
+    public class RequestTreeStore : Gtk.TreeStore, Gtk.TreeDragDest, Gtk.TreeDragSource {
+
+        public const string placeholder_id = "p";
+        private const string placeholder_message = _("<empty>");
+
+        private bool is_populating = false;
 
         enum Columns { NAME, ID, IS_FOLDER, ICON }
 
@@ -36,10 +41,12 @@ namespace Repose.Models {
                 error("Failed to load icon: %s", e.message);
             }
             set_column_types({typeof(string), typeof(string), typeof(bool), typeof(Gdk.Pixbuf)});
+            row_inserted.connect(on_row_inserted);
+            row_deleted.connect(on_row_deleted);
         }
 
         // Prevent dropping into non-folders.
-		public bool row_drop_possible(Gtk.TreePath dest_path, Gtk.SelectionData selection_data) {
+		bool row_drop_possible(Gtk.TreePath dest_path, Gtk.SelectionData selection_data) {
             Gtk.TreeIter iter;
             if (!get_iter(out iter, dest_path)) return false;
             Value val;
@@ -47,10 +54,66 @@ namespace Repose.Models {
             return !val.get_boolean();
         }
 
+        // Prevent dragging placeholder rows.
+        bool row_draggable(Gtk.TreePath path) {
+            Gtk.TreeIter iter;
+            if (!get_iter(out iter, path)) return false;
+
+            Value val;
+            get_value(iter, Columns.ID, out val);
+            return val.get_string() != placeholder_id;
+        }
+
+        void on_row_inserted(Gtk.TreePath path, Gtk.TreeIter iter) {
+            if (is_populating) return;
+            debug("Row inserted: %s", path.to_string());
+
+            Gtk.TreeIter parent_iter;
+            if (!iter_parent(out parent_iter, iter)) return;
+
+            // If iter has parent, remove placeholder item.
+
+            Gtk.TreeIter child_iter;
+            if (!iter_nth_child(out child_iter, parent_iter, 0)) return;
+
+            do {
+                Value val;
+                get_value(child_iter, Columns.ID, out val);
+                if (val.get_string() == placeholder_id) {
+                    row_deleted.disconnect(on_row_deleted);
+                    remove(ref child_iter);
+                    row_deleted.connect(on_row_deleted);
+                    return;
+                }
+            } while(iter_next(ref child_iter));
+        }
+
+        void on_row_deleted(Gtk.TreePath path) {
+            if (is_populating) return;
+            debug("Row deleted: %s", path.to_string());
+
+            // Add placeholder row if folder is now empty.
+
+            //  if (!path.up()) return;
+            if (!path.up()) return;
+
+            Gtk.TreeIter iter;
+            if (!get_iter(out iter, path)) return;
+
+            Gtk.TreeIter placeholder_iter;
+            row_inserted.disconnect(on_row_inserted);
+            append(out placeholder_iter, iter);
+            row_inserted.connect(on_row_inserted);
+
+            set_placeholder(placeholder_iter);
+        }
+
         public void populate_store(Gee.List<Models.RequestTreeNode> nodes) {
             Gtk.TreeIter iter;
             get_iter_first(out iter);
+            is_populating = true;
             _populate(nodes, iter, null);
+            is_populating = false;
         }
 
         private void _populate(Gee.List<Models.RequestTreeNode> nodes, Gtk.TreeIter iter, Gtk.TreeIter? parent) {
@@ -64,6 +127,14 @@ namespace Repose.Models {
                     Columns.ID, node.id, 
                     Columns.IS_FOLDER, node.is_folder,
                     Columns.ICON, node.is_folder ? folder_icon : null);
+
+                // Add empty folder placeholder.
+                if (node.is_folder && node.children.is_empty) {
+                    Gtk.TreeIter placeholder_iter;
+                    append(out placeholder_iter, iter);
+
+                    set_placeholder(placeholder_iter);
+                }
 
                 _populate(node.children, iter, iter);
             }
@@ -115,6 +186,21 @@ namespace Repose.Models {
                 Columns.ID, node.id, 
                 Columns.IS_FOLDER, is_folder,
                 Columns.ICON, is_folder ? folder_icon : null);
+
+            // Add empty folder placeholder.
+            if (is_folder) {
+                Gtk.TreeIter placeholder_iter;
+                append(out placeholder_iter, new_iter);
+                set_placeholder(placeholder_iter);
+            }
+        }
+
+        private void set_placeholder(Gtk.TreeIter iter) {
+            set(iter, 
+                Columns.NAME, placeholder_message,
+                Columns.ID, placeholder_id, 
+                Columns.IS_FOLDER, false,
+                Columns.ICON, null);
         }
     }
 }
