@@ -25,6 +25,7 @@ namespace Repose.Models {
     public class RequestTreeStore : Gtk.TreeStore, Gtk.TreeDragDest, Gtk.TreeDragSource {
 
         public const string placeholder_id = "p";
+        public const string empty_id = "e";
         private const string placeholder_message = _("<empty>");
 
         enum Columns { NAME, ID, IS_FOLDER, ICON }
@@ -50,8 +51,13 @@ namespace Repose.Models {
             Gtk.TreeIter iter;
             if (!get_iter(out iter, dest_path)) return false;
             Value val;
+
+            // Always allow dropping in empty row.
+            get_value(iter, Columns.ID, out val);
+            if (val.get_string() == empty_id) return base.row_drop_possible(dest_path, selection_data);
+
             get_value(iter, Columns.IS_FOLDER, out val);
-            return !val.get_boolean();
+            return !val.get_boolean() && base.row_drop_possible(dest_path, selection_data);
         }
 
         // Prevent dragging placeholder rows.
@@ -61,12 +67,32 @@ namespace Repose.Models {
 
             Value val;
             get_value(iter, Columns.ID, out val);
-            return val.get_string() != placeholder_id;
+            var id = val.get_string();
+            return !(id == placeholder_id || id == empty_id);
         }
 
         void on_row_inserted(Gtk.TreePath path, Gtk.TreeIter iter) {
             debug("Row inserted: %s", path.to_string());
 
+            // TODO: Solve this with a sort function?
+            // Or is the sort order always based on where the user has dropped
+            // the node?
+            var len = iter_n_children(null);
+            if (path.get_indices()[0] >= len - 1) {
+                // If row is inserted after the empty placeholder,
+                // move the placeholder back to the end.
+
+                Gtk.TreeIter placeholder_iter;
+                get_iter(out placeholder_iter, new Gtk.TreePath.from_indices(len-2));
+
+                SignalHandler.block(this, row_deleted_handler);
+                SignalHandler.block(this, row_inserted_handler);
+                swap(placeholder_iter, iter);
+                SignalHandler.unblock(this, row_deleted_handler);
+                SignalHandler.unblock(this, row_inserted_handler);
+                iter = placeholder_iter;
+            }
+            
             Gtk.TreeIter parent_iter;
             if (!iter_parent(out parent_iter, iter)) return;
 
@@ -92,6 +118,7 @@ namespace Repose.Models {
             debug("Row deleted: %s", path.to_string());
 
             // Add placeholder row if folder is now empty.
+            if (path.get_depth() == 1) return;
 
             if (!path.up()) return;
 
@@ -115,7 +142,20 @@ namespace Repose.Models {
 
             SignalHandler.block(this, row_inserted_handler);
             _populate(nodes, iter, null);
+            add_empty_node();
             SignalHandler.unblock(this, row_inserted_handler);
+        }
+
+        // The empty node at the end is used to drop into the root of the tree.
+        private void add_empty_node() {
+            Gtk.TreeIter iter;
+            append(out iter, null);
+
+            set(iter, 
+                Columns.NAME, "",
+                Columns.ID, empty_id, 
+                Columns.IS_FOLDER, false,
+                Columns.ICON, null);
         }
 
         private void _populate(Gee.List<Models.RequestTreeNode> nodes, Gtk.TreeIter iter, Gtk.TreeIter? parent) {

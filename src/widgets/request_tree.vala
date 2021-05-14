@@ -75,7 +75,9 @@ namespace Repose.Widgets {
 
 			Value val;
 			request_list.model.get_value(iter, Models.RequestTreeStore.Columns.ID, out val);
-			return val.get_string() != Models.RequestTreeStore.placeholder_id;
+			var id = val.get_string();
+			return id != Models.RequestTreeStore.placeholder_id
+				&& id != Models.RequestTreeStore.empty_id;
 		}
 
 		[GtkCallback]
@@ -118,7 +120,7 @@ namespace Repose.Widgets {
 			root_state.request_tree.get_value(iter, Models.RequestTreeStore.Columns.ID, out val);
 
 			var id = val.get_string();
-			if (id == Models.RequestTreeStore.placeholder_id) {
+			if (id == Models.RequestTreeStore.placeholder_id || id == Models.RequestTreeStore.empty_id) {
 				debug("Activated placeholder, doing nothing.");
 				return;
 			}
