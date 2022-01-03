@@ -36,16 +36,16 @@ namespace Repose.Widgets {
         [GtkChild] private Gtk.TextView response_headers_text;
         //  [GtkChild] private Gtk.SearchBar response_filter_search_bar;
         //  [GtkChild] private Gtk.SearchEntry response_filter_search_entry;
-        [GtkChild] private Gtk.SourceView response_text;
+        [GtkChild] private GtkSource.View response_text;
         [GtkChild] private Gtk.TextView response_text_raw;
         //  [GtkChild] private Gtk.ScrolledWindow response_webview_scroll_window;
         //  [GtkChild] private Gtk.MenuButton response_menu_button;
         [GtkChild] private Gtk.Spinner response_loading_spinner;
         [GtkChild] private Gtk.Box request_loading_overlay;
 
-        private Gtk.SourceStyleSchemeManager style_manager;
-        private Gtk.SourceLanguageManager language_manager;
-        private Gtk.SourceBuffer response_text_buffer;
+        private GtkSource.StyleSchemeManager style_manager;
+        private GtkSource.LanguageManager language_manager;
+        private GtkSource.Buffer response_text_buffer;
 
         private Models.RootState root_state;
 
@@ -55,12 +55,12 @@ namespace Repose.Widgets {
         public ResponseContainer(Models.RootState root_state) {
             this.root_state = root_state;
 
-            style_manager = new Gtk.SourceStyleSchemeManager();
-            response_text_buffer = (Gtk.SourceBuffer)response_text.buffer;
+            style_manager = new GtkSource.StyleSchemeManager();
+            response_text_buffer = (GtkSource.Buffer)response_text.buffer;
             //  response.body = response_text_buffer;
             response_text_buffer.set_style_scheme(style_manager.get_scheme("kate"));
 
-            language_manager = new Gtk.SourceLanguageManager();
+            language_manager = new GtkSource.LanguageManager();
             var lang = language_manager.get_language("text-plain");
             response_text_buffer.set_language(lang);
 

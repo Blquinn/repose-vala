@@ -19,7 +19,7 @@
 int main (string[] args) {
 	var app = new Gtk.Application("me.blq.Repose", ApplicationFlags.FLAGS_NONE);
 
-	typeof(Gtk.SourceView).ensure();
+	typeof(GtkSource.View).ensure();
 
 
 	app.activate.connect(() => {

@@ -120,6 +120,7 @@
                     <property name="indent-width">2</property>
                     <property name="auto-indent">True</property>
                     <property name="insert-spaces-instead-of-tabs">True</property>
+                    <property name="cursor-visible">True</property>
                   </object>
                 </child>
               </object>
